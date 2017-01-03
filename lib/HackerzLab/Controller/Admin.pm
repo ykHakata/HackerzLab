@@ -5,8 +5,14 @@ use Mojo::Base 'Mojolicious::Controller';
 sub index {
   my $self = shift;
 
-  # admin/index.html
-  $self->render(text => 'HackerzLab Admin Pages');
+  $self->render(template => 'admin/menu');
+  return;
+}
+
+sub menu {
+  my $self = shift;
+
+  $self->render();
   return;
 }
 
