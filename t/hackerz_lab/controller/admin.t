@@ -25,12 +25,6 @@ subtest 'router' => sub {
     $t->get_ok('/admin/menu')->status_is(200);
     $t->get_ok('/admin/menu/')->status_is(200);
 
-    # TODO: {
-    #     local $TODO = 'admin router test';
-    #     $t->get_ok('/admin/menu')->status_is(200);
-    #     $t->get_ok('/admin/menu/')->status_is(200);
-    # }
-
 };
 
 # menu 画面の描画テスト

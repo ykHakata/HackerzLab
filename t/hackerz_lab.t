@@ -33,6 +33,7 @@ subtest 'router' => sub {
     # POST /admin/login -> ( controller => 'auth', action => 'login' );
     $t->post_ok('/admin/login')->status_is(200);
     
+    # 例： logout の場合
     # ログアウト実行
     # POST /admin/logout -> ( controller => 'auth', action => 'logout' );
     $t->post_ok('/admin/logout')->status_is(200);

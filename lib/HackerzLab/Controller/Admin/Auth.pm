@@ -5,7 +5,7 @@ use Mojo::Base 'Mojolicious::Controller';
 sub index {
   my $self = shift;
 
-  $self->render(text => 'Auth#index');
+  $self->render(template => 'admin/login');
   return;
 }
 
@@ -19,7 +19,7 @@ sub login {
 sub logout {
   my $self = shift;
 
-  $self->render(text => 'Auth#logout');
+  $self->render(template => 'admin/logout');
   return;
 }
 
