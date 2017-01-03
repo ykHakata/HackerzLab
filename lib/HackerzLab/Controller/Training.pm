@@ -5,7 +5,7 @@ use Mojo::Base 'Mojolicious::Controller';
 sub index {
   my $self = shift;
 
-  # training/index.html
+  # training
   $self->render(text => 'HackerzLab Training Site');
   return;
 }

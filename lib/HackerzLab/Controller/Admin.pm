@@ -12,7 +12,7 @@ sub index {
 sub menu {
   my $self = shift;
 
-  $self->render();
+  $self->render(template => 'admin/menu');
   return;
 }
 

@@ -16,13 +16,30 @@ subtest 'router' => sub {
     $t->get_ok('/')->status_is(200)->content_like(qr/Welcome to the HackerzLab/i);
 
     # データの中身をダンプする
-    warn 'menu-------: ' , Dumper($t->tx->res->body);
+    # warn 'menu-------: ' , Dumper($t->tx->res->body);
 
     # http://hackerzlab.com/training/ (トレーニングサイト)
-    $t->get_ok('/training/')->status_is(200)->content_like(qr/HackerzLab Training Site/i);
+    $t->get_ok('/training/')->status_is(200);
 
     # http://hackerzlab.com/admin/ (管理画面)
-    $t->get_ok('/admin/')->status_is(200)->content_like(qr/HackerzLab Admin Pages/i);
+    $t->get_ok('/admin/')->status_is(200);
+    
+    # 例： login の場合
+    # ログイン画面を表示
+    # GET /admin/login -> ( controller => 'auth', action => 'index' );
+    $t->get_ok('/admin/login')->status_is(200);
+    
+    # ログイン実行
+    # POST /admin/login -> ( controller => 'auth', action => 'login' );
+    $t->post_ok('/admin/login')->status_is(200);
+    
+    # ログアウト実行
+    # POST /admin/logout -> ( controller => 'auth', action => 'logout' );
+    $t->post_ok('/admin/logout')->status_is(200);
+    
+    # ログアウト実行完了画面描画
+    # GET /admin/logout -> ( controller => 'auth', action => 'logout' );
+    $t->get_ok('/admin/logout')->status_is(200);
 };
 
 # フォルダ構造(コントローラーの中身)
@@ -31,6 +48,7 @@ subtest 'router' => sub {
 # lib/HackerzLab/Controller/
 # lib/HackerzLab/Controller/Admin.pm
 # lib/HackerzLab/Controller/Admin
+# lib/HackerzLab/Controller/Admin/Auth.pm
 # lib/HackerzLab/Controller/Example.pm
 # lib/HackerzLab/Controller/Training.pm
 # lib/HackerzLab/Controller/Training
@@ -39,7 +57,7 @@ subtest 'router' => sub {
 subtest 'controller files exist' => sub {
     my $home = $t->app->home();
     my $files = $home->list_files('lib/HackerzLab/Controller/');
-    my $test_files = [qw{Admin.pm Training.pm}];
+    my $test_files = [qw{Admin.pm Training.pm Admin/Auth.pm}];
     for my $file ( @{$test_files} ){
         my $text = grep { $_ eq $file } @{$files};
         is( $text, 1, "file name test $file" );

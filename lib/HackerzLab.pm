@@ -24,6 +24,12 @@ sub startup {
   $r->get('/admin/menu')->to('admin#menu');
   $r->get('/admin/menu/')->to('admin#menu');
   
+  # ログイン/ログアウト関連
+  $r->get('/admin/login')->to('Admin::Auth#index');
+  $r->post('/admin/login')->to('Admin::Auth#login');
+  $r->post('/admin/logout')->to('Admin::Auth#logout');
+  $r->get('/admin/logout')->to('Admin::Auth#logout');
+  
 }
 
 1;
