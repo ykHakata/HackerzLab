@@ -17,11 +17,9 @@ sub startup {
   
   # トレーニングサイト http://hackerzlab.com/training/ 
   $r->get('/training/')->to('training#index');
-  # $r->get('/training/index.html')->to('training#index');
-  
+    
   # 管理サイト http://hackerzlab.com/admin/
   $r->get('/admin/')->to('admin#index');
-  # $r->get('/admin/index.html')->to('admin#index');
   
 }
 
