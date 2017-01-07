@@ -9,6 +9,12 @@ use Data::Dumper;
 # ハッカーシステムの読み込み
 my $t = Test::Mojo->new('HackerzLab');
 
+# etc/conf
+subtest 'plugin conf' => sub {
+    my $conf = $t->app->config;
+    is( $conf->{mode}, $t->app->mode, 'conf test' );
+};
+
 # コマンドスクリプト用のスペース
 subtest 'namespaces commands' => sub {
     my $namespaces = $t->app->commands->namespaces;

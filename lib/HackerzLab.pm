@@ -5,6 +5,16 @@ use Mojo::Base 'Mojolicious';
 sub startup {
     my $self = shift;
 
+    my $etc_dir     = $self->home->rel_dir('etc');
+    my $mode        = $self->mode;
+    my $moniker     = $self->moniker;
+    my $conf_file   = qq{$etc_dir/$moniker.$mode.conf};
+    my $common_file = qq{$etc_dir/$moniker.common.conf};
+
+    # 設定ファイル
+    $self->plugin( Config => +{ file => $conf_file } );
+    $self->plugin( Config => +{ file => $common_file } );
+
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
     $self->plugin( 'Config', { 'file' => 'config/config.pl' } );
