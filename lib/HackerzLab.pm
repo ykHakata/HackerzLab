@@ -9,6 +9,9 @@ sub startup {
     $self->plugin('PODRenderer');
     $self->plugin( 'Config', { 'file' => 'config/config.pl' } );
 
+    # コマンドをロードするための他の名前空間
+    push @{ $self->commands->namespaces }, 'HackerzLab::Command';
+
     # Router
     my $r = $self->routes;
 

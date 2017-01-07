@@ -9,6 +9,17 @@ use Data::Dumper;
 # ハッカーシステムの読み込み
 my $t = Test::Mojo->new('HackerzLab');
 
+# コマンドスクリプト用のスペース
+subtest 'namespaces commands' => sub {
+    my $namespaces = $t->app->commands->namespaces;
+    my @names      = qw{Mojolicious::Command HackerzLab::Command};
+    for my $name ( @{$namespaces} ) {
+        my $ok = grep { $name eq $_ } @names;
+        my $label = $name . ' namespaces ok!';
+        ok( $ok, $label );
+    }
+};
+
 # ルーティングのテスト
 subtest 'router' => sub {
     # http://hackerzlab.com/ (告知サイト)
@@ -23,21 +34,21 @@ subtest 'router' => sub {
 
     # http://hackerzlab.com/admin/ (管理画面)
     $t->get_ok('/admin/')->status_is(200);
-    
+
     # 例： login の場合
     # ログイン画面を表示
     # GET /admin/login -> ( controller => 'auth', action => 'index' );
     $t->get_ok('/admin/login')->status_is(200);
-    
+
     # ログイン実行
     # POST /admin/login -> ( controller => 'auth', action => 'login' );
     $t->post_ok('/admin/login')->status_is(200);
-    
+
     # 例： logout の場合
     # ログアウト実行
     # POST /admin/logout -> ( controller => 'auth', action => 'logout' );
     $t->post_ok('/admin/logout')->status_is(200);
-    
+
     # ログアウト実行完了画面描画
     # GET /admin/logout -> ( controller => 'auth', action => 'logout' );
     $t->get_ok('/admin/logout')->status_is(200);
