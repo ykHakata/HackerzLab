@@ -1,0 +1,7 @@
+ID,ログインID,ログインパスワード,管理者権限,削除フラグ,登録日時,修正日時
+id,login_id,password,authority,delete_flag,create_ts,modify_ts
+1,hackerz.lab.system@gmail.com,hackerz,1,0,2016-01-08 12:24:12,2016-01-08 12:24:12
+2,hackerz.lab.sudo@gmail.com,sudo,2,0,2016-01-08 12:24:12,2016-01-08 12:24:12
+3,hackerz.lab.admin@gmail.com,admin,3,0,2016-01-08 12:24:12,2016-01-08 12:24:12
+4,hackerz.lab.general@gmail.com,general,4,0,2016-01-08 12:24:12,2016-01-08 12:24:12
+5,hackerz.lab.guest@gmail.com,guest,5,0,2016-01-08 12:24:12,2016-01-08 12:24:12

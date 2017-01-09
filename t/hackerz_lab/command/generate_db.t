@@ -31,9 +31,7 @@ subtest 'create db testing' => sub {
 
     # データベースファイル存在確認 (無いこと)
     # ある場合は一旦削除
-    my $database_dir  = $conf->{database_dir};
-    my $database_name = $conf->{database_name};
-    my $file          = qq{$database_dir/$database_name.$mode.db};
+    my $file = $conf->{database_file};
 
     if ( -f $file ) {
         unlink $file;

@@ -11,9 +11,9 @@ sub startup {
     my $conf_file   = qq{$etc_dir/$moniker.$mode.conf};
     my $common_file = qq{$etc_dir/$moniker.common.conf};
 
-    # 設定ファイル
-    $self->plugin( Config => +{ file => $conf_file } );
+    # 設定ファイル (読み込む順番に注意)
     $self->plugin( Config => +{ file => $common_file } );
+    $self->plugin( Config => +{ file => $conf_file } );
 
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
