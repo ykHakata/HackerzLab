@@ -43,6 +43,16 @@ sub startup {
     $r->post('/admin/login')->to('Admin::Auth#login');
     $r->post('/admin/logout')->to('Admin::Auth#logout');
     $r->get('/admin/logout')->to('Admin::Auth#logout');
+
+    # 管理者管理管理
+    $r->get('/admin/staff')->to('Admin::Staff#index');
+    $r->get('/admin/staff/search')->to('Admin::Staff#search');
+    $r->get('/admin/staff/create')->to('Admin::Staff#create');
+    $r->get('/admin/staff/:id')->to('Admin::Staff#show');
+    $r->get('/admin/staff/:id/edit')->to('Admin::Staff#edit');
+    $r->post('/admin/staff')->to('Admin::Staff#store');
+    $r->post('/admin/staff/:id/update')->to('Admin::Staff#update');
+    $r->post('/admin/staff/:id/remove')->to('Admin::Staff#remove');
 }
 
 1;
