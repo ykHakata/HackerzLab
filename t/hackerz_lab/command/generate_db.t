@@ -3,8 +3,9 @@ use Test::More;
 use Test::Mojo;
 use Mojo::Util qw{dumper};
 
-# ハッカーシステムの読み込み
-my $t = Test::Mojo->new('HackerzLab');
+# ハッカーシステムテスト共通
+use t::Util;
+my $t = t::Util::init();
 
 # 呼び出し確認
 subtest 'test run' => sub {

@@ -6,8 +6,9 @@ use Test::Mojo;
 # データ構造をダンプする
 use Data::Dumper;
 
-# ハッカーシステムの読み込み
-my $t = Test::Mojo->new('HackerzLab');
+# ハッカーシステムテスト共通
+use t::Util;
+my $t = t::Util::init();
 
 # admin コントローラーのテスト
 
@@ -21,7 +22,7 @@ subtest 'router' => sub {
     $t->get_ok('/admin/')->status_is(200);
 
     # GET /admin/menu -> ( controller => 'admin', action => 'index' );
-    # GET /admin/menu/ -> ( controller => 'admin', action => 'index' );    
+    # GET /admin/menu/ -> ( controller => 'admin', action => 'index' );
     $t->get_ok('/admin/menu')->status_is(200);
     $t->get_ok('/admin/menu/')->status_is(200);
 

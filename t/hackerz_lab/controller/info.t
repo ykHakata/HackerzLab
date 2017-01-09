@@ -5,8 +5,9 @@ use Test::Mojo;
 # できるだけ Mojo でできることは Mojo で済ませたい
 use Mojo::Util qw{dumper};
 
-# ハッカーシステムの読み込み
-my $t = Test::Mojo->new('HackerzLab');
+# ハッカーシステムテスト共通
+use t::Util;
+my $t = t::Util::init();
 
 # ルーティングテスト
 subtest 'router' => sub {

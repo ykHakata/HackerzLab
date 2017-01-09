@@ -6,8 +6,9 @@ use Test::Mojo;
 # データ構造をダンプする
 use Data::Dumper;
 
-# ハッカーシステムの読み込み
-my $t = Test::Mojo->new('HackerzLab');
+# ハッカーシステムテスト共通
+use t::Util;
+my $t = t::Util::init();
 
 # etc/conf
 subtest 'plugin conf' => sub {
