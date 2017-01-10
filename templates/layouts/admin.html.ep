@@ -43,7 +43,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="#">問題の管理機能</a></li>
                 <li><a href="#">受講者の管理機能</a></li>
-                <li><a href="/test/staff/index.html">管理者ユーザ</a></li>
+                <li><a href="/admin/staff">管理者ユーザ</a></li>
                 <li><a href="#">問題のカリキュラム機能</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/test/logout.html"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> ログアウト</a></li>
@@ -56,11 +56,11 @@
       <!-- /.container-fluid -->
     </nav>
     <!-- /ヘッダー -->
-    
+
     <!-- コンテンツ -->
     <%= content %>
     <!-- /コンテンツ -->
-    
+
     <!-- フッター -->
     <nav class="navbar navbar-default navbar-fixed-bottom">
       <div class="navbar-header">

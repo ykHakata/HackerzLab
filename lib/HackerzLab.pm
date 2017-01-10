@@ -1,5 +1,15 @@
 package HackerzLab;
 use Mojo::Base 'Mojolicious';
+use HackerzLab::DB;
+use HackerzLab::Model;
+
+=encoding utf8
+
+=head1 NAME
+
+HackerzLab - ハッカーズラボ (アプリケーション)
+
+=cut
 
 # This method will run once at server start
 sub startup {
@@ -18,6 +28,20 @@ sub startup {
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
     $self->plugin( 'Config', { 'file' => 'config/config.pl' } );
+
+    # データーベース
+    $self->helper(
+        db => sub {
+            state $db = HackerzLab::DB->new( +{ app => $self->app } );
+        }
+    );
+
+    # コントローラーモデル
+    $self->helper(
+        model => sub {
+            state $model = HackerzLab::Model->new( +{ app => $self->app } );
+        }
+    );
 
     # コマンドをロードするための他の名前空間
     push @{ $self->commands->namespaces }, 'HackerzLab::Command';

@@ -5,14 +5,19 @@ use Mojo::Base 'Mojolicious::Controller';
 
 =head1 NAME
 
-HackerzLab::Controller::Admin::Staff - 管理者管理機能
+HackerzLab::Controller::Admin::Staff - コントローラー (管理機能/管理者ユーザー管理)
 
 =cut
 
 # 一覧画面 (検索入力画面含み)
 sub index {
     my $self = shift;
-    $self->render( text => 'index' );
+
+    my $model_staff    = $self->model->admin->staff;
+    my $staff_all_rows = $model_staff->staff_all_rows;
+    my $staff_all_hash = [ map { $_->get_columns } @{$staff_all_rows} ];
+    $self->stash->{staffs} = $staff_all_hash;
+    $self->render( template => 'admin/staff/index' );
     return;
 }
 

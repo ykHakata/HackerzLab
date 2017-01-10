@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>staff - index</title>
+</head>
+
+<body>
+  <table>
+    <tr>
+      <th>id</th>
+      <th>login_id</th>
+      <th>create_ts</th>
+      <th>modify_ts</th>
+    </tr>
+    % for my $staff ( @{$staffs} ) {
+    <tr>
+      <th><%= $staff->{id}; %></th>
+      <td><%= $staff->{login_id}; %></td>
+      <td><%= $staff->{create_ts}; %></td>
+      <td><%= $staff->{modify_ts}; %></td>
+    </tr>
+    % }
+  </table>
+</body>
+
+</html>
