@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>viewer - 公開ファイルの目次</title>
+</head>
+
+<body>
+  <h1>公開ファイルの目次</h1>
+  <table>
+    <tr>
+      <th>dir</th>
+      <th>file</th>
+      <th>link</th>
+    </tr>
+    % for my $file (@{$index_public_files}) {
+    <tr>
+      <td> <%= $file->{dir_path} %> </td>
+      <td> <%= $file->{file} %> </td>
+      <td> <a href="<%= $file->{url_link} %>" target="_blank"><%= $file->{url_link} %></a> </td>
+    </tr>
+    % }
+  </table>
+</body>
+
+</html>

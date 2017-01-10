@@ -53,6 +53,9 @@ sub startup {
     $r->get('/')->to('info#index');
     $r->get('/index')->to('info#index');
 
+    # 公開ファイルの目次
+    $r->get('/viewer')->to('viewer#index');
+
     # トレーニングサイト http://hackerzlab.com/training/
     $r->get('/training/')->to('training#index');
 
