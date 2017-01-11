@@ -63,6 +63,10 @@
 
     <!-- フッター -->
     <nav class="navbar navbar-default navbar-fixed-bottom">
+      % if (app->mode ne 'production') {
+      <!-- 実行モード確認用、本番環境では非表示にしてください -->
+      <div class="text-center"><mark>こちらは<strong><%= app->mode =%></strong>の画面です</mark></div>
+      % }
       <div class="navbar-header">
         <a class="navbar-brand" href="/test/menu.html">Hackerzlab</a>
       </div>
