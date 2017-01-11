@@ -8,6 +8,18 @@ HackerzLab - ホワイトハッカー育成、トレーニングゲームシス�
 
 <https://hackerz-lab.herokuapp.com> - heroku による試験用 (変更になることがあります)
 
+#### 下記アドレスは準備中
+
+`hackerzlab.com` は検討中、変更になることがあります
+
+http://hackerzlab.com - 告知サイト (当面今の告知サイトにリダイレクト予定)
+
+http://hackerzlab.com/viewer - 公開ファイルの目次 (自由に回覧できる public 配下のリンク付き目次)
+
+http://hackerzlab.com/training - トレーニングサイト
+
+http://hackerzlab.com/admin - 管理画面
+
 # LOCAL
 
 お手元の開発環境にて
