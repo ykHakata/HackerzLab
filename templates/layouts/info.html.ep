@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-  <title>HackerzLab/info</title>
+  <title><%= title %></title>
   <!-- Bootstrap -->
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/united/bootstrap.min.css" rel="stylesheet">
@@ -27,56 +27,14 @@
   </nav>
   <!-- /ヘッダー -->
   <!-- コンテンツ -->
-  <div class="page-header">
-    <h1 class="text-center">Welcome to the HackerzLab<small></small></h1>
-  </div>
-  <!-- 告知サイト -->
-  <div class="list-group">
-    <a href="/" class="list-group-item">
-      <h4 class="list-group-item-heading">告知サイト</h4>
-      <p class="list-group-item-text">
-        <br>告知サイト
-        <br>http://hackerzlab.com 当面今の告知サイトにリダイレクト予定
-      </p>
-    </a>
-  </div>
-  <!-- 公開ファイルの目次 -->
-  <div class="list-group">
-    <a href="/viewer" class="list-group-item">
-      <h4 class="list-group-item-heading">公開ファイルの目次</h4>
-      <p class="list-group-item-text">
-        <br>公開ファイルの目次
-        <br>http://hackerzlab.com/viewer 自由に回覧できる public 配下のリンク付き目次
-      </p>
-    </a>
-  </div>
-  <!-- トレーニングサイト -->
-  <div class="list-group">
-    <a href="/training" class="list-group-item">
-      <h4 class="list-group-item-heading">トレーニングサイト</h4>
-      <p class="list-group-item-text">
-        <br>トレーニングサイト
-        <br>http://hackerzlab.com/training
-      </p>
-    </a>
-  </div>
-  <!-- 管理画面 -->
-  <div class="list-group">
-    <a href="/admin" class="list-group-item">
-      <h4 class="list-group-item-heading">管理画面</h4>
-      <p class="list-group-item-text">
-        <br>管理画面
-        <br>http://hackerzlab.com/admin
-      </p>
-    </a>
-  </div>
+  <%= content =%>
   <!-- /コンテンツ -->
   <!-- フッター -->
   <nav class="navbar navbar-default navbar-fixed-bottom">
+    % if (app->mode ne 'production') {
     <!-- 実行モード確認用、本番環境では非表示にしてください -->
-    <div class="text-center">
-      <mark>こちらは<strong>デザイン原案</strong>の画面です</mark>
-    </div>
+    <div class="text-center"><mark>こちらは<strong><%= app->mode =%></strong>の画面です</mark></div>
+    % }
     <div class="navbar-header">
       <a class="navbar-brand" href="/">Hackerzlab</a>
     </div>
