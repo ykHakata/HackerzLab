@@ -46,6 +46,35 @@ sub startup {
     # コマンドをロードするための他の名前空間
     push @{ $self->commands->namespaces }, 'HackerzLab::Command';
 
+    # ルーティング前に共通して実行
+    $self->hook(
+        before_dispatch => sub {
+            my $c          = shift;
+            my $url        = $c->req->url;
+            my $admin_auth = $self->model->admin->auth;
+
+            $admin_auth->login_row(undef);
+            $admin_auth->login_id(undef);
+
+            # ログイン、ログアウトページは例外
+            return if $url =~ m{^/admin/login};
+            return if $url =~ m{^/admin/logout};
+
+            # 認証保護されたページ
+            if ( $url =~ m{^/admin} ) {
+
+                # セッション情報からログイン者の情報を取得
+                $admin_auth->login_id( $c->session('login_id') );
+                return $admin_auth->exists_login_id if $admin_auth->login_id;
+
+                # セッション無き場合ログインページへ
+                $c->flash( login_guide => 'ログインが必要です' );
+                $c->redirect_to('/admin/login');
+                return;
+            }
+        }
+    );
+
     # Router
     my $r = $self->routes;
 

@@ -1,51 +1,48 @@
 % layout 'admin';
 % title 'Admin menu';
-% if (my $flash_msg = flash('msg')) {
-<div class="text-center"><mark><strong><%= $flash_msg %></strong>ログインしました</mark></div>
-% }
-<div class="page-header">
-  <h1 class="text-center">管理者機能一覧<small></small></h1>
-</div>
-<!-- 問題の管理機能 -->
-<div class="list-group">
-  <a href="#" class="list-group-item">
-    <h4 class="list-group-item-heading">問題の管理機能</h4>
-    <p class="list-group-item-text">
-      問題の一覧表示
-      <br> 問題の追加、編集、削除機能
-      <br> 問題の難易度設定
-      <br> 問題のヒントの登録
-    </p>
-  </a>
-</div>
-<!-- 受講者の管理機能 -->
-<div class="list-group">
-  <a href="#" class="list-group-item">
-    <h4 class="list-group-item-heading">受講者の管理機能</h4>
-    <p class="list-group-item-text">
-      受講者の登録修正削除
-      <br> 受講者の一覧
-    </p>
-  </a>
-</div>
-<!-- 管理者ユーザー -->
-<div class="list-group">
-  <a href="/admin/staff" class="list-group-item">
-    <h4 class="list-group-item-heading">管理者ユーザ</h4>
-    <p class="list-group-item-text">
-      管理者ユーザの登録修正削除
-      <br> 管理者の一覧
-    </p>
-  </a>
-</div>
-<!-- 問題のカリキュラム機能 -->
-<div class="list-group">
-  <a href="#" class="list-group-item">
-    <h4 class="list-group-item-heading">問題のカリキュラム機能</h4>
-    <p class="list-group-item-text">
-      カリキュラム機能
-      <br> カリキュラムの公開設定
-      <br> 公開資料のアップロード画面
-    </p>
-  </a>
-</div>
+    <div class="page-header">
+      <h1 class="text-center">管理者機能一覧<small></small></h1>
+    </div>
+    <!-- 問題の管理機能 -->
+    <div class="list-group">
+      <a href="#" class="list-group-item">
+        <h4 class="list-group-item-heading">問題の管理機能</h4>
+        <p class="list-group-item-text">
+          問題の一覧表示
+          <br> 問題の追加、編集、削除機能
+          <br> 問題の難易度設定
+          <br> 問題のヒントの登録
+        </p>
+      </a>
+    </div>
+    <!-- 受講者の管理機能 -->
+    <div class="list-group">
+      <a href="#" class="list-group-item">
+        <h4 class="list-group-item-heading">受講者の管理機能</h4>
+        <p class="list-group-item-text">
+          受講者の登録修正削除
+          <br> 受講者の一覧
+        </p>
+      </a>
+    </div>
+    <!-- 管理者ユーザー -->
+    <div class="list-group">
+      <a href="/admin/staff" class="list-group-item">
+        <h4 class="list-group-item-heading">管理者ユーザ</h4>
+        <p class="list-group-item-text">
+          管理者ユーザの登録修正削除
+          <br> 管理者の一覧
+        </p>
+      </a>
+    </div>
+    <!-- 問題のカリキュラム機能 -->
+    <div class="list-group">
+      <a href="#" class="list-group-item">
+        <h4 class="list-group-item-heading">問題のカリキュラム機能</h4>
+        <p class="list-group-item-text">
+          カリキュラム機能
+          <br> カリキュラムの公開設定
+          <br> 公開資料のアップロード画面
+        </p>
+      </a>
+    </div>

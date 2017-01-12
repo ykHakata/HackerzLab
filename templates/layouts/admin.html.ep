@@ -31,7 +31,7 @@
           </button>
           <a class="navbar-brand" href="/">Hackerzlab</a>
         </div>
-        % if (my $login_id = session('login_id')) {
+        % if ( app->model->admin->auth->login_row ) {
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
@@ -40,7 +40,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="#"><%= $login_id =%></a></li>
+                <li><a href="#"><%= app->model->admin->auth->login_row->login_id =%></a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="#">問題の管理機能</a></li>
                 <li><a href="#">受講者の管理機能</a></li>
@@ -63,11 +63,15 @@
       <!-- /.container-fluid -->
     </nav>
     <!-- /ヘッダー -->
-
     <!-- コンテンツ -->
-    <%= content %>
+    % if (my $login_guide = flash('login_guide')) {
+    <div class="text-center"><mark><strong><%= $login_guide %></strong></mark></div>
+    % }
+    % if (my $flash_msg = flash('msg')) {
+    <div class="text-center"><mark><strong><%= $flash_msg %></strong>ログインしました</mark></div>
+    % }
+    <%= content =%>
     <!-- /コンテンツ -->
-
     <!-- フッター -->
     <nav class="navbar navbar-default navbar-fixed-bottom">
       % if (app->mode ne 'production') {
@@ -79,7 +83,6 @@
       </div>
     </nav>
     <!-- /フッター -->
-
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->

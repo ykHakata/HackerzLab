@@ -92,6 +92,51 @@ subtest 'auth check' => sub {
     is( $session_id, undef, 'session_id' );
 };
 
+# ログインセッションで保護されたページ
+subtest 'session site' => sub {
+
+    # ログインしていない状態で menu ページアクセス
+    my $url = '/admin/menu';
+    $t->get_ok($url)->status_is(302);
+
+    # リダイレクト先の確認 (login 誘導)
+    my $location_url = '/admin/login';
+    $t->header_is( location => $location_url );
+
+    # ログイン情報がないことを確認
+    my $login_row = $t->app->model->admin->auth->login_row;
+    is( $login_row, undef, 'check login row' );
+
+    # ログイン状態でアクセス
+
+    # テスト用の staff データの存在確認
+    my $row = $t->app->db->teng->single( 'staff', +{ id => 1 } );
+    ok($row);
+
+    # ログインへのアクセス
+    $url = '/admin/login';
+    my $params = +{
+        email    => $row->login_id,
+        password => $row->password,
+    };
+
+    # 302リダイレクトレスポンスの許可
+    $t->ua->max_redirects(1);
+    $t->post_ok( $url => form => $params )->status_is(200);
+    $t->content_like(qr{\Qログインしました\E});
+    $t->ua->max_redirects(0);
+
+    # ログイン状態で menu ページアクセス
+    $url = '/admin/menu';
+    $t->get_ok($url)->status_is(200);
+
+    # ログイン情報の確認
+    $login_row = $t->app->model->admin->auth->login_row;
+    ok( $login_row, 'check login row' );
+    is( $row->id,       $login_row->id,       'check login_row' );
+    is( $row->login_id, $login_row->login_id, 'check login_row' );
+};
+
 done_testing();
 
 __END__
