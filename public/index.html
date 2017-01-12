@@ -1,11 +1,255 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
-    <title>Welcome to the HackerzLab real-time web framework!</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Hackerz Lab.博多</title>
+
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/united/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
   </head>
-  <body>
-    <h2>Welcome to the HackerzLab real-time web framework!</h2>
-    This is the static document "public/index.html",
-    <a href="/">click here</a> to get back to the start.
+  <body class="container">
+
+    <div class="jumbotron">
+      <h1>Hackerz Lab.博多</h1>
+      <p>Hackerz Lab.博多 とは次世代のホワイトハッカー育成の為の団体です。</p>
+    </div>
+    <div class="page-header text-center"><pre><strong><a href="/info" target="_blank">システムサイトはこちら</a></strong></pre></div>
+    <div class="page-header">
+      <h1>Hackerz Lab.博多 とは ?</h1>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">
+        <img src="/img/hackerzlab.jpg" class="img-thumbnail" alt="">
+      </div><!-- /.col-sm-3 -->
+      <div class="col-sm-9">
+        <div class="well">
+          <p>
+          Hackerz Lab.博多 とは次世代のホワイトハッカー育成の為の団体です。<br>
+          本来ハッカーとは、コンピューターについて常人より深い技術知識を持ち合わせているという意味なのですが、
+          不正なアクセスなど行う、クラッカーを行う人を指して表現されることが多いです。<br>
+          最近では善意的な活動をしているハッカーをホワイトハッカー、
+          不正なアクセスなどを行うハッカーはブラックハットハッカーと
+          区別して表現するようになりました。<br>
+          コンピューターやインターネットの世界は人と人とをつないで、すこしでも多くの幸せをもたらす為のものです。<br>
+          私たちと一緒に次世代のホワイトハッカーを目指してトレーニングしてみましょう。
+          </p>
+        </div>
+      </div><!-- /.col-sm-9 -->
+    </div>
+
+    <div class="page-header">
+      <h1>イベント告知</h1>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">開催予定</h3>
+          </div>
+          <div class="panel-body">
+            2016 年 6 月 26 日(日) 16:00 - 19:30<br>
+            場所: 天神仕事基地<br>
+            住所: 福岡県福岡市中央区天神3-15-1 にちりんビル3F<br>
+          </div>
+        </div>
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <h3 class="panel-title">運営スタッフ / Hackerz Lab.博多</h3>
+          </div>
+          <div class="panel-body">
+            <p>所長: 日下部</p>
+            <p>助手: YAYOI</p>
+            <p>ハカー: 平松</p>
+            <p>オレンジ: 近藤</p>
+            <p>ブレイズ: 古林</p>
+          </div>
+        </div>
+      </div><!-- /.col-sm-4 -->
+      <div class="col-sm-8">
+        <div class="panel panel-success">
+          <div class="panel-heading">
+            <h3 class="panel-title">この講座の講師 (ハカー)</h3>
+          </div>
+          <div class="panel-body">
+          <p>
+          平松 和剛 (@kaz_hiramatsu)<br>
+          IT 企業にてWEB系システム開発に従事し、現在はフリーランスで活動を行っている。<br>
+          過去に YAPC::ASIA のスピーカーや、「雅な Perl 入門」(初級者向けの Perl入門書)
+          の執筆など、WEBエンジニア界隈において堅実な活動を行っている。<br>
+          実務経験に裏打ちされた、現実的な指導に定評があり。
+          </p>
+          </div>
+        </div>
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title">こんなことをやります</h3>
+          </div>
+          <div class="panel-body">
+          <p>前回のトレーニングクイズにさらに新問題追加難易度アップ</p>
+          <p>好評のハッカーズトークに新ネタ、ここだけの話!</p>
+          <p>貴重な現役エンジニアとの交流、ハッカーズミーティング</p>
+          <p>最新の IT スキル向上のためのエンターテイメントイベント</p>
+          </div>
+        </div>
+      </div><!-- /.col-sm-8 -->
+    </div>
+
+    <div class="page-header">
+      <h1>当日の流れ</h1>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <ul class="list-group">
+
+          <li class="list-group-item active">16:00 開場</li>
+
+          <li class="list-group-item">
+            <h4 class="list-group-item-heading">16:00 ～ 16:30 開始</h4>
+            <p class="list-group-item-text">受付、自己紹介、本日の流れの説明</p>
+          </li>
+
+          <li class="list-group-item">
+            <h4 class="list-group-item-heading">16:30 トレーニングクイズ</h4>
+            <p class="list-group-item-text">Season 3 新作クイズに挑戦します</p>
+          </li>
+
+          <li class="list-group-item">
+            <h4 class="list-group-item-heading">17:15 トレーニングクイズ内容の解説</h4>
+            <p class="list-group-item-text">クイズの回答の解説を通してスキル向上を目指します</p>
+          </li>
+
+          <li class="list-group-item">
+            <h4 class="list-group-item-heading">18:00 ハッカーズトーク</h4>
+            <p class="list-group-item-text">
+              IT 界隈のホットな話題の紹介をします
+              現役エンジニアからの貴重なここだけの話が聞けます
+            </p>
+          </li>
+
+          <li class="list-group-item">
+            <h4 class="list-group-item-heading">19:00 ハッカーズミーティング</h4>
+            <p class="list-group-item-text">
+              参加者との意見交流
+              参加者や運営者、現役のエンジニアと貴重な親睦、交流の機会が作れます
+            </p>
+          </li>
+
+          <li class="list-group-item">
+            <h4 class="list-group-item-heading">19:30 終わりの挨拶、片付け</h4>
+            <p class="list-group-item-text">次回のお知らせなどをします
+            </p>
+          </li>
+
+          <li class="list-group-item">
+            <h4 class="list-group-item-heading">19:45 終了</h4>
+            <p class="list-group-item-text">参加者退場します
+            </p>
+          </li>
+
+          <li class="list-group-item active">20:00 完全撤収</li>
+
+        </ul>
+      </div><!-- /.col-sm-12 -->
+    </div>
+
+    <div class="page-header">
+      <h1>申し込み案内</h1>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">このような方を対象としてます</h3>
+          </div>
+          <div class="panel-body text-center">
+            <h4> <span class="label label-default">プログラミングやインターネットに興味がある方</span> </h4>
+            <h4> <span class="label label-primary">自身のITスキルを試してみたい方</span> </h4>
+            <h4> <span class="label label-success">基本的なパソコンの操作の出来る方</span> </h4>
+            <h4> <span class="label label-info">暗号を解読して合言葉を見つけ出せる方</span> </h4>
+          </div>
+        </div>
+      </div><!-- /.col-sm-6 -->
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">申し込みフォーム</h3>
+          </div>
+          <div class="panel-body text-center">
+            <a data-width="300" class="doorkeeper-registration-widget" href="https://hackers.doorkeeper.jp/events/47202"></a>
+            <script src="https://widgets.doorkeeper.jp/w/widget.js"></script>
+          </div>
+        </div>
+      </div><!-- /.col-sm-6 -->
+    </div>
+
+    <div class="page-header">
+      <h1>最新情報 SNS</h1>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">twitter</h3>
+          </div>
+          <div class="panel-body text-center">
+          <!-- ここにツイッターの埋め込み -->
+          <a class="twitter-timeline"  href="https://twitter.com/search?q=hackerz_hkt" data-widget-id="744889308679544832">hackerz_hktに関するツイート</a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+          </div>
+        </div>
+      </div><!-- /.col-sm-6 -->
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Facebook</h3>
+          </div>
+          <div class="panel-body text-center">
+          <!-- ここにフェイスブックの埋め込み -->
+          <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FHackerzLab.HKT%2F&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId" width="340" height="500" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+          </div>
+        </div>
+      </div><!-- /.col-sm-6 -->
+    </div>
+
+    <div class="page-header">
+      <h1>更新情報</h1>
+    </div>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title"><a data-toggle="collapse" href="#update">更新情報・お知らせ</a></h3>
+      </div>
+      <div class="panel-body collapse" id="update">
+        <p>2016-01-04 イベント告知開始</p>
+        <p>2016-01-08 コンテンツ修正</p>
+        <p>2016-02-26 TrainingHackers から Hackerz Lab.博多 へ改名</p>
+        <p>2016-04-23 イベント告知3回目</p>
+        <p>2016-06-13 イベント告知4回目</p>
+      </div>
+    </div>
+
+    <div class="page-header">
+      <h1>注意事項、今回は場所が変更！</h1>
+    </div>
+    <div class="alert alert-success" role="alert">
+      <strong>学生さん人気No1 天神仕事基地!</strong>
+      詳細はこのサイトを参考にしてね!
+      <a href="http://shigoto-kichi.com/tenjin/" target="_blank">http://shigoto-kichi.com/tenjin/</a>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/bootstrap.min.js"></script>
   </body>
 </html>

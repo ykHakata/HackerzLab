@@ -11,6 +11,12 @@ Info - 告知用サイト
 
 sub index {
     my $self = shift;
+    $self->reply->static('index.html');
+    return;
+}
+
+sub menu {
+    my $self = shift;
     $self->render(
         template => 'info/index',
         format   => 'html',

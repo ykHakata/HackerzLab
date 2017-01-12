@@ -14,6 +14,8 @@ HackerzLab - ホワイトハッカー育成、トレーニングゲームシス�
 
 http://hackerzlab.com - 告知サイト (当面今の告知サイトにリダイレクト予定)
 
+http://hackerzlab.com/info - 総合案内サイト
+
 http://hackerzlab.com/viewer - 公開ファイルの目次 (自由に回覧できる public 配下のリンク付き目次)
 
 http://hackerzlab.com/training - トレーニングサイト

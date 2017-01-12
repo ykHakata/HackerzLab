@@ -34,8 +34,8 @@ subtest 'router' => sub {
     $t->ua->max_redirects(1);
 
     # http://hackerzlab.com/ (告知サイト)
-    $t->get_ok('/index.html')->status_is(200)->content_like(qr/Welcome to the HackerzLab/i);
-    $t->get_ok('/')->status_is(200)->content_like(qr/Welcome to the HackerzLab/i);
+    $t->get_ok('/index.html')->status_is(200)->content_like(qr/Hackerz Lab/i);
+    $t->get_ok('/')->status_is(200)->content_like(qr/Hackerz Lab/i);
 
     # データの中身をダンプする
     # warn 'menu-------: ' , Dumper($t->tx->res->body);

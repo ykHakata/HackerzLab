@@ -81,6 +81,7 @@ sub startup {
     # 告知用サイト(暫定) http://hackerzlab.com/
     $r->get('/')->to('info#index');
     $r->get('/index')->to('info#index');
+    $r->get('/info')->to('info#menu');
 
     # 公開ファイルの目次
     $r->get('/viewer')->to('viewer#index');
