@@ -1,5 +1,8 @@
 % layout 'admin';
 % title 'Admin menu';
+% if (my $flash_msg = flash('msg')) {
+<div class="text-center"><mark><strong><%= $flash_msg %></strong>ログインしました</mark></div>
+% }
 <div class="page-header">
   <h1 class="text-center">管理者機能一覧<small></small></h1>
 </div>

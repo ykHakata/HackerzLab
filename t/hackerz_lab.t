@@ -29,6 +29,10 @@ subtest 'namespaces commands' => sub {
 
 # ルーティングのテスト
 subtest 'router' => sub {
+
+    # 302リダイレクトレスポンスの許可
+    $t->ua->max_redirects(1);
+
     # http://hackerzlab.com/ (告知サイト)
     $t->get_ok('/index.html')->status_is(200)->content_like(qr/Welcome to the HackerzLab/i);
     $t->get_ok('/')->status_is(200)->content_like(qr/Welcome to the HackerzLab/i);
@@ -59,6 +63,9 @@ subtest 'router' => sub {
     # ログアウト実行完了画面描画
     # GET /admin/logout -> ( controller => 'auth', action => 'logout' );
     $t->get_ok('/admin/logout')->status_is(200);
+
+    # 必ず戻すように ...
+    $t->ua->max_redirects(0);
 };
 
 # フォルダ構造(コントローラーの中身)

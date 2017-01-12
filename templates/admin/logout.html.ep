@@ -5,7 +5,7 @@
 </div>
 <!-- 問題の管理機能 -->
 <div class="list-group">
-  <a href="/test/login.html" class="list-group-item">
+  <a href="/admin/login" class="list-group-item">
     <h4 class="list-group-item-heading">ログアウトしました</h4>
     <p class="list-group-item-text">
       もう一度ログインしたい場合はここをクリックしてください </p>
