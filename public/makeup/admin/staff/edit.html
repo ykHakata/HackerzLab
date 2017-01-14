@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>HackerzLab/admin/staff/edit</title>
+  <!-- Bootstrap -->
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/lumen/bootstrap.min.css" rel="stylesheet">
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="container" style="margin-top: 70px; margin-bottom: 100px;">
+  <!-- ヘッダー -->
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/makeup/admin/menu.html">Hackerzlab</a>
+      </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="/makeup/admin/staff/show.html">yosizuka1@gmail.com (yk)</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#">問題の管理機能</a></li>
+              <li><a href="#">受講者の管理機能</a></li>
+              <li><a href="/makeup/admin/staff/index.html">管理者ユーザ</a></li>
+              <li><a href="#">問題のカリキュラム機能</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="/makeup/admin/logout.html"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> ログアウト</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+  </nav>
+  <!-- /ヘッダー -->
+  <!-- コンテンツ -->
+  <div class="page-header">
+    <h1 class="text-center">管理者ユーザー/編集<small></small></h1>
+  </div>
+  <!-- 入力フォーム一式 -->
+  <div class="panel panel-default">
+    <div class="panel-heading">hackerz.lab.system@gmail.com</div>
+    <!-- アイコン -->
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+          <img src="/img/hackerzlab.jpg" class="img-responsive img-thumbnail" alt="Responsive image">
+        </div>
+        <div class="col-xs-6 col-sm-8 col-md-9 col-lg-9">
+          <dl class="dl-horizontal">
+            <dt>authority</dt>
+            <dd>現在のアクセス権限は <strong>root</strong> です</dd>
+            <dt>what?</dt>
+            <dd>アクセス権限の詳細は <a href="#" target="_blank">help</a> ページを参照ください</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <!-- /アイコン -->
+    <!-- 入力フォーム -->
+    <div class="panel-body">
+      <form class="form-horizontal" method="post" action="">
+        <div class="form-group">
+          <label for="inputId" class="col-sm-2 control-label">ID</label>
+          <div class="col-sm-10">
+            <input name="id" type="" class="form-control" id="inputId" placeholder="ID" value="1" disabled>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputLoginId" class="col-sm-2 control-label">ログインID</label>
+          <div class="col-sm-10">
+            <input name="login_id" type="" class="form-control" id="inputLoginId" placeholder="ログインID" value="hackerz.lab.system@gmail.com" disabled>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputPassword" class="col-sm-2 control-label">ログインパスワード</label>
+          <div class="col-sm-10">
+            <input name="password" type="password" class="form-control" id="inputPassword" placeholder="ログインパスワード" value="hackerz">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputAuthority" class="col-sm-2 control-label">管理者権限</label>
+          <div class="col-sm-10">
+            <input name="authority" type="" class="form-control" id="inputAuthority" placeholder="管理者権限" value="root" disabled>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputName" class="col-sm-2 control-label">名前</label>
+          <div class="col-sm-10">
+            <input name="name" type="" class="form-control" id="inputName" placeholder="名前" value="日下部 幸夫">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputRubi" class="col-sm-2 control-label">ふりがな</label>
+          <div class="col-sm-10">
+            <input name="rubi" type="" class="form-control" id="inputRubi" placeholder="ふりがな" value="くさかべ ゆきお">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputNickname" class="col-sm-2 control-label">表示用ニックネーム</label>
+          <div class="col-sm-10">
+            <input name="nickname" type="" class="form-control" id="inputNickname" placeholder="表示用ニックネーム" value="yk">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inpuEmail" class="col-sm-2 control-label">連絡用メールアドレス</label>
+          <div class="col-sm-10">
+            <input name="email" type="" class="form-control" id="inputEmail" placeholder="連絡用メールアドレス" value="hackerz.lab.system@gmail.com">
+          </div>
+        </div>
+        <div class="text-center">
+          <a href="/makeup/admin/staff/show.html" class="btn btn-info btn-lg " role="button">詳細</a>
+          <a href="/makeup/admin/staff/index.html" class="btn btn-default btn-lg " role="button">一覧</a>
+          <button type="submit" class="btn btn-danger btn-lg">実行</button>
+        </div>
+      </form>
+    </div>
+    <!-- /入力フォーム -->
+  </div>
+  <!-- /入力フォーム一式 -->
+  <!-- /コンテンツ -->
+  <!-- フッター -->
+  <nav class="navbar navbar-default navbar-fixed-bottom">
+    <!-- 実行モード確認用、本番環境では非表示にしてください -->
+    <div class="text-center">
+      <mark>こちらは<strong>デザイン原案</strong>の画面です</mark>
+    </div>
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/makeup/admin/menu.html">Hackerzlab</a>
+    </div>
+  </nav>
+  <!-- /フッター -->
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="/js/bootstrap.min.js"></script>
+</body>
+
+</html>
