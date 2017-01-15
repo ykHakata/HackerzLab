@@ -9,16 +9,25 @@ HackerzLab::Model::Admin::Staff - コントローラーモデル (管理機能/�
 
 =cut
 
+has [qw{hash_ref_staffs}];
+
 # 呼び出しテスト
 sub welcome {
     my $self = shift;
     return 'welcome HackerzLab::Model::Admin::Staff!!';
 }
 
-sub staff_all_rows {
+# 一覧画面初期表示用 staff 情報
+sub get_hash_ref_index_staff {
     my $self = shift;
-    my @rows = $self->app->db->teng->search( 'staff', +{} );
-    return \@rows;
+    my $teng = $self->app->db->teng;
+    my ( $rows, $pager ) = $teng->search_with_pager(
+        'staff' => +{ delete_flag => 0 },
+        +{ page => 1, rows => 5 }
+    );
+    my $hash_ref = [ map { $_->get_columns } @{$rows} ];
+    $self->hash_ref_staffs($hash_ref);
+    return $hash_ref;
 }
 
 1;

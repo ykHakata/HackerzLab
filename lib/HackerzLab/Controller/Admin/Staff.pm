@@ -1,5 +1,6 @@
 package HackerzLab::Controller::Admin::Staff;
 use Mojo::Base 'Mojolicious::Controller';
+use Mojo::Util qw{dumper};
 
 =encoding utf8
 
@@ -11,12 +12,10 @@ HackerzLab::Controller::Admin::Staff - コントローラー (管理機能/管�
 
 # 一覧画面 (検索入力画面含み)
 sub index {
-    my $self = shift;
-
-    my $model_staff    = $self->model->admin->staff;
-    my $staff_all_rows = $model_staff->staff_all_rows;
-    my $staff_all_hash = [ map { $_->get_columns } @{$staff_all_rows} ];
-    $self->stash->{staffs} = $staff_all_hash;
+    my $self        = shift;
+    my $admin_staff = $self->model->admin->staff;
+    $admin_staff->get_hash_ref_index_staff();
+    $self->stash->{staffs} = $admin_staff->hash_ref_staffs;
     $self->render( template => 'admin/staff/index' );
     return;
 }

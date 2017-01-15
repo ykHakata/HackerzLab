@@ -1,27 +1,73 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-  <title>staff - index</title>
-</head>
-
-<body>
-  <table>
-    <tr>
-      <th>id</th>
-      <th>login_id</th>
-      <th>create_ts</th>
-      <th>modify_ts</th>
-    </tr>
-    % for my $staff ( @{$staffs} ) {
-    <tr>
-      <th><%= $staff->{id}; %></th>
-      <td><%= $staff->{login_id}; %></td>
-      <td><%= $staff->{create_ts}; %></td>
-      <td><%= $staff->{modify_ts}; %></td>
-    </tr>
-    % }
-  </table>
-</body>
-
-</html>
+% layout 'admin';
+% title 'admin/staff';
+  <div class="page-header">
+    <h1 class="text-center">管理者ユーザー/一覧<small></small></h1>
+  </div>
+  <!-- 絞り込み検索一式 -->
+  <div class="panel panel-default">
+    <div class="panel-heading">絞り込み検索</div>
+    <!-- アイコン -->
+    <div class="panel-body">
+      <dl class="dl-horizontal">
+        <dt>authority</dt>
+        <dd>現在のアクセス権限は <strong>root</strong> です</dd>
+        <dt>what?</dt>
+        <dd>アクセス権限の詳細は <a href="#" target="_blank">help</a> ページを参照ください</dd>
+        <dt>new</dt>
+        <dd>新規管理者登録はこのボタンを押してください</dd>
+      </dl>
+      <div class="text-center">
+        <a href="/admin/staff/create" class="btn btn-primary" role="button">新規登録</a>
+      </div>
+    </div>
+    <!-- /アイコン -->
+    <!-- 検索入力フォーム -->
+    <div class="panel-body">
+      <form class="form-horizontal" method="get" action="/admin/staff/search">
+        <div class="form-group">
+          <label for="inputId" class="col-sm-2 control-label">ID</label>
+          <div class="col-sm-10">
+            <input name="id" type="" class="form-control" id="inputId" placeholder="ID" value="">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputName" class="col-sm-2 control-label">名前</label>
+          <div class="col-sm-10">
+            <input name="name" type="" class="form-control" id="inputName" placeholder="名前" value="">
+          </div>
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-danger btn-lg">絞り込み検索実行</button>
+        </div>
+      </form>
+    </div>
+    <!-- /検索入力フォーム -->
+  </div>
+  <!-- /絞り込み検索一式 -->
+  <!-- 一覧情報 -->
+  % for my $staff ( @{$staffs} ) {
+  <div class="panel panel-default">
+    <div class="panel-body row">
+      <div class="col-xs-3 col-sm-2 col-md-1 col-lg-1">
+        <img src="/img/hackerzlab.jpg" class="img-responsive img-thumbnail" alt="Responsive image">
+      </div>
+      <div class="col-xs-5 col-sm-6 col-md-7 col-lg-7">
+        <ul class="list-unstyled">
+          <li> <strong>ID: <%= $staff->{id} =%></strong> </li>
+          <li><%= $staff->{login_id} =%></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="panel-body text-right col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <a href="/admin/staff/<%= $staff->{id} =%>" class="btn btn-info" role="button">詳細</a>
+      </div>
+    </div>
+  </div>
+  % }
+  <!-- /一覧情報 -->
+  <nav aria-label="">
+    <ul class="pager">
+      <li class="previous disabled"><a href=""><span aria-hidden="true">&larr;</span> Older</a></li>
+      <li class="next"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+    </ul>
+  </nav>

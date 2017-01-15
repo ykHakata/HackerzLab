@@ -27,6 +27,36 @@ subtest 'router' => sub {
     $t->ua->max_redirects(0);
 };
 
+# 一覧画面 (検索入力画面含み)
+subtest 'index' => sub {
+
+    # ログインせずにリクエスト (リダイレクトされる)
+    $t->get_ok('/admin/staff')->status_is(302);
+
+    # ログイン画面へ誘導
+    $t->header_is( location => '/admin/login' );
+
+    # ログインをする
+    t::Util::login_admin($t);
+
+    # 一覧を表示できる
+    $t->get_ok('/admin/staff')->status_is(200);
+
+    # タイトルと確実に表示される 1件目のみを確認テスト
+    # @ は特別な意味があるので、一度文字列にして
+    my $words = [ '絞り込み検索', 'hackerz.lab.system@gmail.com' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # ログアウトする
+    t::Util::logout_admin($t);
+
+    # ログアウトの確認
+    $t->get_ok('/admin/staff')->status_is(302);
+    $t->header_is( location => '/admin/login' );
+};
+
 done_testing();
 
 __END__

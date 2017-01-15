@@ -2,6 +2,7 @@ package HackerzLab::DB::Base;
 use Mojo::Base -base;
 use Teng;
 use Teng::Schema::Loader;
+Teng->load_plugin('Pager');
 
 =encoding utf8
 
