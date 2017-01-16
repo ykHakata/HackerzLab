@@ -46,7 +46,7 @@ sub search {
 # 新規登録画面表示
 sub create {
     my $self = shift;
-    $self->render( text => 'create' );
+    $self->render( template => 'admin/staff/create' );
     return;
 }
 

@@ -134,6 +134,30 @@ subtest 'search' => sub {
     $t->header_is( location => '/admin/login' );
 };
 
+# 新規登録画面表示
+subtest 'creata' => sub {
+    t::Util::login_admin($t);
+    $t->get_ok('/admin/staff/create')->status_is(200);
+
+    # 初期表示
+    my $words = [ '新規登録フォーム' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    #  入力フォームの存在確認
+    my $tags = [
+        'input[name=id]',       'input[name=login_id]',
+        'input[name=password]', 'input[name=name]',
+        'input[name=rubi]',     'input[name=nickname]',
+        'input[name=email]',
+    ];
+    for my $tag ( @{$tags} ) {
+        $t->element_exists( $tag, "element check $tag" );
+    }
+    t::Util::logout_admin($t);
+};
+
 done_testing();
 
 __END__

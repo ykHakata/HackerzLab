@@ -1,0 +1,91 @@
+% layout 'admin';
+% title 'admin/staff/create';
+    <div class="page-header">
+      <h1 class="text-center">管理者ユーザー/新規登録<small></small></h1>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">新規登録フォーム</div>
+      <!-- アイコン -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+            <img src="/img/hackerzlab.jpg" class="img-responsive img-thumbnail" alt="Responsive image">
+          </div>
+          <div class="col-xs-6 col-sm-8 col-md-9 col-lg-9">
+            <dl class="dl-horizontal">
+              <dt>authority</dt>
+              <dd>現在のアクセス権限は <strong>root</strong> です</dd>
+              <dt>what?</dt>
+              <dd>アクセス権限の詳細は <a href="#" target="_blank">help</a> ページを参照ください</dd>
+              <dt>create</dt>
+              <dd>ログインユーザーによって権限登録に制限があります、詳細は <a href="#" target="_blank">help</a> ページを参照ください</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+      <!-- /アイコン -->
+      <!-- 入力フォーム -->
+      <div class="panel-body">
+        <form class="form-horizontal" method="post" action="">
+          <div class="form-group">
+            <label for="inputId" class="col-sm-2 control-label">ID</label>
+            <div class="col-sm-10">
+              <input name="id" type="" class="form-control" id="inputId" placeholder="ID" value="" disabled>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputLoginId" class="col-sm-2 control-label">ログインID (email)</label>
+            <div class="col-sm-10">
+              <input name="login_id" type="" class="form-control" id="inputLoginId" placeholder="ログインID (email)" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputPassword" class="col-sm-2 control-label">ログインパスワード</label>
+            <div class="col-sm-10">
+              <input name="password" type="password" class="form-control" id="inputPassword" placeholder="ログインパスワード" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputAuthority" class="col-sm-2 control-label">管理者権限</label>
+            <div class="col-sm-10">
+              <select class="form-control" name="authority" id="inputAuthority">
+                <option value="1">root</option>
+                <option value="2">sudo</option>
+                <option value="3">admin</option>
+                <option value="4">general</option>
+                <option value="5">guest</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputName" class="col-sm-2 control-label">名前</label>
+            <div class="col-sm-10">
+              <input name="name" type="" class="form-control" id="inputName" placeholder="名前" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputRubi" class="col-sm-2 control-label">ふりがな</label>
+            <div class="col-sm-10">
+              <input name="rubi" type="" class="form-control" id="inputRubi" placeholder="ふりがな" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputNickname" class="col-sm-2 control-label">表示用ニックネーム</label>
+            <div class="col-sm-10">
+              <input name="nickname" type="" class="form-control" id="inputNickname" placeholder="表示用ニックネーム" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inpuEmail" class="col-sm-2 control-label">連絡用メールアドレス</label>
+            <div class="col-sm-10">
+              <input name="email" type="" class="form-control" id="inputEmail" placeholder="連絡用メールアドレス" value="">
+            </div>
+          </div>
+          <div class="text-center">
+            <a href="/admin/staff" class="btn btn-default btn-lg " role="button">一覧</a>
+            <button type="submit" class="btn btn-danger btn-lg">実行</button>
+          </div>
+        </form>
+      </div>
+      <!-- /入力フォーム -->
+    </div>

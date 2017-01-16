@@ -40,7 +40,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="#"><%= app->model->admin->auth->login_row->login_id =%></a></li>
+                <li><a href="#"><%= app->model->admin->auth->login_row->login_id %></a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="#">問題の管理機能</a></li>
                 <li><a href="#">受講者の管理機能</a></li>
@@ -81,7 +81,7 @@
     <nav class="navbar navbar-default navbar-fixed-bottom">
       % if (app->mode ne 'production') {
       <!-- 実行モード確認用、本番環境では非表示にしてください -->
-      <div class="text-center"><mark>こちらは<strong><%= app->mode =%></strong>の画面です</mark></div>
+      <div class="text-center"><mark>こちらは<strong><%= app->mode %></strong>の画面です</mark></div>
       % }
       <div class="navbar-header">
         <a class="navbar-brand" href="/">Hackerzlab</a>
