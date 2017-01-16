@@ -15,7 +15,7 @@ sub index {
     my $self        = shift;
     my $admin_staff = $self->model->admin->staff;
     $admin_staff->create( $self->req->params->to_hash );
-    $admin_staff->get_index_staff();
+    $admin_staff->search_staff_index;
     $self->stash->{staffs} = $admin_staff->staff_rows;
     $self->stash->{pager}  = $admin_staff->pager;
     $self->render( template => 'admin/staff/index' );
@@ -53,7 +53,12 @@ sub create {
 # 個別詳細画面
 sub show {
     my $self = shift;
-    $self->render( text => 'show' );
+    my $params = +{ id => $self->stash->{id}, };
+
+    my $admin_staff = $self->model->admin->staff;
+    $admin_staff->create($params);
+    $self->stash->{staff} = $admin_staff->search_staff_show->staff_row;
+    $self->render( template => 'admin/staff/show' );
     return;
 }
 

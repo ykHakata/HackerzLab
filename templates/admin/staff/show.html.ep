@@ -1,0 +1,99 @@
+% layout 'admin';
+% title 'admin/staff/show';
+    <div class="page-header">
+      <h1 class="text-center">管理者ユーザー/詳細<small></small></h1>
+    </div>
+    <!-- 詳細一式 -->
+    <div class="panel panel-default">
+      <div class="panel-heading"><%= $staff->login_id %></div>
+      <!-- アイコン -->
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-6 col-sm-4 col-md-3 col-lg-3">
+            <img src="/img/hackerzlab.jpg" class="img-responsive img-thumbnail" alt="Responsive image">
+          </div>
+          <div class="col-xs-6 col-sm-8 col-md-9 col-lg-9">
+            <dl class="dl-horizontal">
+              <dt>authority</dt>
+              <dd>現在のアクセス権限は <strong>root</strong> です</dd>
+              <dt>what?</dt>
+              <dd>アクセス権限の詳細は <a href="#" target="_blank">help</a> ページを参照ください</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+      <!-- /アイコン -->
+      <!-- 詳細情報 -->
+      <div class="panel-body">
+        <dl class="dl-horizontal list-group ">
+          <li class="list-group-item ">
+            <dt class="">ID</dt>
+            <dd class=""><%= $staff->id %></dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">ログインID</dt>
+            <dd class=""><%= $staff->login_id %></dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">ログインパスワード</dt>
+            <dd class="">****</dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">管理者権限</dt>
+            <dd class=""><%= $staff->authority %></dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">名前</dt>
+            <dd class=""><%= $staff->fetch_address->name %></dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">ふりがな</dt>
+            <dd class=""><%= $staff->fetch_address->rubi %></dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">表示用ニックネーム</dt>
+            <dd class=""><%= $staff->fetch_address->nickname %></dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">連絡用メールアドレス</dt>
+            <dd class=""><%= $staff->fetch_address->email %></dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">登録日時</dt>
+            <dd class=""><%= $staff->create_ts %>2016-01-08 12:24:12</dd>
+          </li>
+          <li class="list-group-item ">
+            <dt class="">修正日時</dt>
+            <dd class=""><%= $staff->modify_ts %>2016-01-08 12:24:12</dd>
+          </li>
+        </dl>
+        <div class="text-center">
+          <a href="/admin/staff/<%= $staff->id %>/edit" class="btn btn-info btn-lg " role="button">編集</a>
+          <a href="/admin/staff" class="btn btn-default btn-lg " role="button">一覧</a>
+          <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#myModal">削除</button>
+        </div>
+      </div>
+      <!-- /詳細情報 -->
+    </div>
+    <!-- /詳細一式 -->
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">削除確認</h4>
+          </div>
+          <div class="modal-body">
+            本当に削除していいですか
+          </div>
+          <div class="modal-footer">
+            <form class="" method="post" action="/admin/staff/<%= $staff->id %>/remove">
+              <button type="button" class="btn btn-default" data-dismiss="modal">もどる</button>
+              <button type="submit" class="btn btn-danger">実行</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Modal -->

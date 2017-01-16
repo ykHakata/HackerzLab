@@ -15,6 +15,7 @@ has [
         req_params
         page
         staff_rows
+        staff_row
         pager
         query_staff_id
         }
@@ -36,7 +37,7 @@ sub create {
 }
 
 # 一覧画面初期表示用 staff 情報
-sub get_index_staff {
+sub search_staff_index {
     my $self = shift;
     my $teng = $self->app->db->teng;
     my ( $rows, $pager ) = $teng->search_with_pager(
@@ -45,7 +46,7 @@ sub get_index_staff {
     );
     $self->staff_rows($rows);
     $self->pager($pager);
-    return $rows;
+    return $self;
 }
 
 # 入力条件による検索
@@ -54,7 +55,7 @@ sub search_staff {
     my $teng = $self->app->db->teng;
 
     # パラメータ無き場合
-    return $self->get_index_staff
+    return $self->search_staff_index
         if !$self->req_params->{id} && !$self->req_params->{name};
 
     # sql maker にしろ 生 sql にしろ、
@@ -69,7 +70,7 @@ sub search_staff {
 
     # 名前検索が存在する場合
     if ( $self->req_params->{name} ) {
-        return if !$self->with_query_address_name();
+        return $self if !$self->with_query_address_name();
     }
 
     # 検索条件
@@ -118,6 +119,15 @@ sub with_query_address_name {
     }
     $self->query_staff_id($ids);
     return 1;
+}
+
+# 詳細画面向け検索
+sub search_staff_show {
+    my $self = shift;
+    $self->search_staff;
+    my $rows = $self->staff_rows;
+    $self->staff_row( shift @{$rows} );
+    return $self;
 }
 
 1;

@@ -158,6 +158,27 @@ subtest 'creata' => sub {
     t::Util::logout_admin($t);
 };
 
+# 個別詳細画面
+subtest 'show' => sub {
+    t::Util::login_admin($t);
+    $t->get_ok('/admin/staff/2')->status_is(200);
+
+    # 詳細画面の値確認
+    my $words = [
+        'hackerz.lab.sudo@gmail.com',
+        '新命 明',
+        'しんめい あきら',
+        'アオレンジャー',
+        '2016-01-08 12:24:12',
+        '2016-01-08 12:24:12',
+    ];
+
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+    t::Util::logout_admin($t);
+};
+
 done_testing();
 
 __END__
