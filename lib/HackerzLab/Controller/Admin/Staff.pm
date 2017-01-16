@@ -14,16 +14,32 @@ HackerzLab::Controller::Admin::Staff - コントローラー (管理機能/管�
 sub index {
     my $self        = shift;
     my $admin_staff = $self->model->admin->staff;
-    $admin_staff->get_hash_ref_index_staff();
-    $self->stash->{staffs} = $admin_staff->hash_ref_staffs;
+    $admin_staff->create( $self->req->params->to_hash );
+    $admin_staff->get_index_staff();
+    $self->stash->{staffs} = $admin_staff->staff_rows;
+    $self->stash->{pager}  = $admin_staff->pager;
     $self->render( template => 'admin/staff/index' );
     return;
 }
 
 # 検索実行
 sub search {
-    my $self = shift;
-    $self->render( text => 'search' );
+    my $self        = shift;
+    my $admin_staff = $self->model->admin->staff;
+    $admin_staff->create( $self->req->params->to_hash );
+
+    # 入力条件による検索
+    $admin_staff->search_staff;
+
+    # 検索結果の値一式 (staff, ページ の情報)
+    $self->stash->{staffs} = $admin_staff->staff_rows;
+    $self->stash->{pager}  = $admin_staff->pager;
+
+    # teng の row は該当なしの場合は undef だが pager は []
+    if ( !@{ $self->stash->{staffs} } ) {
+        $self->stash->{msg} = '「検索該当がありません」';
+    }
+    $self->render( template => 'admin/staff/index' );
     return;
 }
 

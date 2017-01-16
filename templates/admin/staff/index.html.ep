@@ -53,9 +53,9 @@
       </div>
       <div class="col-xs-5 col-sm-6 col-md-7 col-lg-7">
         <ul class="list-unstyled">
-          <li> <strong>ID: <%= $staff->{id} =%></strong> </li>
-          <li><%= $staff->{login_id} =%></li>
-          <li></li>
+          <li> <strong>ID: <%= $staff->id =%></strong> </li>
+          <li><%= $staff->login_id =%></li>
+          <li><%= $staff->fetch_address->name =%></li>
         </ul>
       </div>
       <div class="panel-body text-right col-xs-4 col-sm-4 col-md-4 col-lg-4">
@@ -67,7 +67,15 @@
   <!-- /一覧情報 -->
   <nav aria-label="">
     <ul class="pager">
-      <li class="previous disabled"><a href=""><span aria-hidden="true">&larr;</span> Older</a></li>
-      <li class="next"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+    % if ( $pager && $pager->prev_page ) {
+      <li class="previous"><a href="<%= url_with->query([page => $pager->prev_page]) =%>"><span aria-hidden="true">&larr;</span> Older</a></li>
+    % } else {
+      <li class="previous disabled"><a><span aria-hidden="true">&larr;</span> Older</a></li>
+    % }
+    % if ( $pager && $pager->next_page ){
+      <li class="next"><a href="<%= url_with->query([page => $pager->next_page]) =%>">Newer <span aria-hidden="true">&rarr;</span></a></li>
+    % } else {
+      <li class="next disabled"><a>Newer <span aria-hidden="true">&rarr;</span></a></li>
+    % }
     </ul>
   </nav>

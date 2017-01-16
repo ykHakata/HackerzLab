@@ -1,5 +1,5 @@
 ID,ログインID,ログインパスワード,管理者権限,削除フラグ,登録日時,修正日時
-id,login_id,password,authority,delete_flag,create_ts,modify_ts
+id,login_id,password,authority,deleted,create_ts,modify_ts
 1,hackerz.lab.system@gmail.com,hackerz,1,0,2016-01-08 12:24:12,2016-01-08 12:24:12
 2,hackerz.lab.sudo@gmail.com,sudo,2,0,2016-01-08 12:24:12,2016-01-08 12:24:12
 3,hackerz.lab.admin@gmail.com,admin,3,0,2016-01-08 12:24:12,2016-01-08 12:24:12
@@ -9,5 +9,5 @@ id,login_id,password,authority,delete_flag,create_ts,modify_ts
 7,hackerz.lab.karamatu@gmail.com,karamatu,5,0,2016-01-08 12:24:12,2016-01-08 12:24:12
 8,hackerz.lab.tyoromatu@gmail.com,tyoromatu,5,0,2016-01-08 12:24:12,2016-01-08 12:24:12
 9,hackerz.lab.itimatu@gmail.com,itimatu,5,0,2016-01-08 12:24:12,2016-01-08 12:24:12
-10,hackerz.lab.todomatu@gmail.com,todomatu,5,0,2016-01-08 12:24:12,2016-01-08 12:24:12
-11,hackerz.lab.zyuusimatu@gmail.com,zyuusimatu,5,1,2016-01-08 12:24:12,2016-01-08 12:24:12
+10,hackerz.lab.zyuusimatu@gmail.com,zyuusimatu,5,0,2016-01-08 12:24:12,2016-01-08 12:24:12
+11,hackerz.lab.todomatu@gmail.com,todomatu,5,1,2016-01-08 12:24:12,2016-01-08 12:24:12

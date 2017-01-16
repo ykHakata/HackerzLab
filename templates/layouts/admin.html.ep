@@ -70,6 +70,11 @@
     % if (my $flash_msg = flash('msg')) {
     <div class="text-center"><mark><strong><%= $flash_msg %></strong>ログインしました</mark></div>
     % }
+    <!-- 汎用のメッセージ -->
+    % if (my $stash_msg = stash('msg')) {
+    <div class="text-center"><mark><strong><%= $stash_msg %></strong></mark></div>
+    % }
+    <!-- /汎用のメッセージ -->
     <%= content =%>
     <!-- /コンテンツ -->
     <!-- フッター -->

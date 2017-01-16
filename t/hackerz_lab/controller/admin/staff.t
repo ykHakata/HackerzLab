@@ -1,7 +1,7 @@
 use Mojo::Base -strict;
 use Test::More;
 use Test::Mojo;
-use Mojo::Util qw{dumper};
+use Mojo::Util qw{dumper url_escape url_unescape encode};
 
 # ハッカーシステムテスト共通
 use t::Util;
@@ -42,9 +42,17 @@ subtest 'index' => sub {
     # 一覧を表示できる
     $t->get_ok('/admin/staff')->status_is(200);
 
-    # タイトルと確実に表示される 1件目のみを確認テスト
-    # @ は特別な意味があるので、一度文字列にして
-    my $words = [ '絞り込み検索', 'hackerz.lab.system@gmail.com' ];
+# タイトルと確実に表示される 2件目のみを確認テスト
+# 1件目はログインしているので、ヘッダーに表示されてる
+# @ は特別な意味があるので、一度文字列にして
+    my $words = [ '絞り込み検索', 'hackerz.lab.sudo@gmail.com' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # ページャーの指定 id -> 7 (最初の 5件にはない)
+    $t->get_ok('/admin/staff?page=2')->status_is(200);
+    $words = [ '絞り込み検索', 'hackerz.lab.karamatu@gmail.com' ];
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
@@ -54,6 +62,75 @@ subtest 'index' => sub {
 
     # ログアウトの確認
     $t->get_ok('/admin/staff')->status_is(302);
+    $t->header_is( location => '/admin/login' );
+};
+
+# 検索実行
+subtest 'search' => sub {
+
+    # ログインをする
+    t::Util::login_admin($t);
+
+# stash->{staffs} を定義するまえにリクエストすると 500 になるはず
+# こちらテストコードでは再現できない、テストコードは完璧ではないのだ
+    $t->get_ok('/admin/staff/search')->status_is(200);
+
+    # 特に値をしてせずに検索の場合、初期表示と同じ
+    my $words = [ '絞り込み検索', 'hackerz.lab.sudo@gmail.com' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # id -> 7 を指定して検索 (最初の 5件にはない)
+    $t->get_ok('/admin/staff/search?id=7&name=')->status_is(200);
+    $words = [ '絞り込み検索', 'hackerz.lab.karamatu@gmail.com' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # ページャーの指定 id -> 7 (最初の 5件にはない)
+    $t->get_ok('/admin/staff/search?page=2')->status_is(200);
+    $words = [ '絞り込み検索', 'hackerz.lab.karamatu@gmail.com' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+# 検索に該当しない場合のメッセージ  -> 「検索該当がありません」
+    $t->get_ok('/admin/staff/search?id=999999&name=')->status_is(200);
+    $words = [ '絞り込み検索', '「検索該当がありません」' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # 名前の検索 address テーブル検索
+    # 9,hackerz.lab.itimatu@gmail.com,itimatu,5,0,2016-01-08 12:24:12,2016-01-08 12:24:12
+    # 9,9,松野 一松,まつの いちまつ,いちまつ,0,2016-01-08 12:24:12,2016-01-08 12:24:12
+    my $chars = '松野 一松';
+    $t->get_ok( '/admin/staff/search?id=&name=' . $chars )->status_is(200);
+    $words = [ '絞り込み検索', 'hackerz.lab.itimatu@gmail.com' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # 名前と ID の検索 address テーブル検索
+    $t->get_ok( '/admin/staff/search?id=9&name=' . $chars )->status_is(200);
+    $words = [ '絞り込み検索', 'hackerz.lab.itimatu@gmail.com' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # 名前と ID の検索 address テーブル検索 ( ID が違うので失敗する)
+    $t->get_ok( '/admin/staff/search?id=99&name=' . $chars )->status_is(200);
+    $words = [ '絞り込み検索', '「検索該当がありません」' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # ログアウトする
+    t::Util::logout_admin($t);
+
+    # ログアウトの確認
+    $t->get_ok('/admin/staff/search')->status_is(302);
     $t->header_is( location => '/admin/login' );
 };
 

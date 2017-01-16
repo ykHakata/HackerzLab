@@ -15,6 +15,13 @@ sub welcome {
     return 'welcome HackerzLab::DB::Teng::Row::Staff!!';
 }
 
+sub fetch_address {
+    my $self = shift;
+    return $self->handle->single( 'address',
+        +{ staff_id => $self->id, deleted => 0, },
+    );
+}
+
 1;
 
 __END__
