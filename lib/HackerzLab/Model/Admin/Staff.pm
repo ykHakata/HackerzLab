@@ -18,6 +18,7 @@ has [
         staff_row
         pager
         query_staff_id
+        edit_form_params
         }
 ];
 
@@ -38,11 +39,13 @@ sub create {
 
 # 一覧画面初期表示用 staff 情報
 sub search_staff_index {
-    my $self = shift;
-    my $teng = $self->app->db->teng;
+    my $self   = shift;
+    my $teng   = $self->app->db->teng;
+    my $master = $self->app->db->master;
     my ( $rows, $pager ) = $teng->search_with_pager(
-        'staff' => +{ deleted => 0 },
-        +{ page => $self->page, rows => 5 }
+        'staff',
+        +{ deleted => $master->label('NOT_DELETED')->deleted->constant },
+        +{ page    => $self->page, rows => 5 },
     );
     $self->staff_rows($rows);
     $self->pager($pager);
@@ -51,8 +54,9 @@ sub search_staff_index {
 
 # 入力条件による検索
 sub search_staff {
-    my $self = shift;
-    my $teng = $self->app->db->teng;
+    my $self   = shift;
+    my $teng   = $self->app->db->teng;
+    my $master = $self->app->db->master;
 
     # パラメータ無き場合
     return $self->search_staff_index
@@ -76,7 +80,7 @@ sub search_staff {
     # 検索条件
     my $cond = +{};
     $cond->{id}      = $self->query_staff_id;
-    $cond->{deleted} = 0;
+    $cond->{deleted} = $master->label('NOT_DELETED')->deleted->constant;
 
     # 検索
     my ( $rows, $pager )
@@ -125,8 +129,26 @@ sub with_query_address_name {
 sub search_staff_show {
     my $self = shift;
     $self->search_staff;
-    my $rows = $self->staff_rows;
-    $self->staff_row( shift @{$rows} );
+    $self->staff_row( shift @{$self->staff_rows} );
+    return $self;
+}
+
+# 編集画面向け検索一式
+sub search_staff_edit {
+    my $self = shift;
+    $self->search_staff;
+    $self->staff_row( shift @{$self->staff_rows} );
+
+    my $staff_hash   = $self->staff_row->get_columns;
+    my $address_hash = $self->staff_row->fetch_address->get_columns;
+    my $params = +{
+        %{$staff_hash},
+        name     => $address_hash->{name},
+        rubi     => $address_hash->{rubi},
+        nickname => $address_hash->{nickname},
+        email    => $address_hash->{email},
+    };
+    $self->edit_form_params($params);
     return $self;
 }
 

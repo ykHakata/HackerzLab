@@ -12,9 +12,9 @@ HackerzLab::Controller::Admin::Staff - コントローラー (管理機能/管�
 
 # 一覧画面 (検索入力画面含み)
 sub index {
-    my $self        = shift;
-    my $admin_staff = $self->model->admin->staff;
-    $admin_staff->create( $self->req->params->to_hash );
+    my $self = shift;
+    my $admin_staff
+        = $self->model->admin->staff->create( $self->req->params->to_hash );
     $admin_staff->search_staff_index;
     $self->stash->{staffs} = $admin_staff->staff_rows;
     $self->stash->{pager}  = $admin_staff->pager;
@@ -24,9 +24,9 @@ sub index {
 
 # 検索実行
 sub search {
-    my $self        = shift;
-    my $admin_staff = $self->model->admin->staff;
-    $admin_staff->create( $self->req->params->to_hash );
+    my $self = shift;
+    my $admin_staff
+        = $self->model->admin->staff->create( $self->req->params->to_hash );
 
     # 入力条件による検索
     $admin_staff->search_staff;
@@ -54,9 +54,7 @@ sub create {
 sub show {
     my $self = shift;
     my $params = +{ id => $self->stash->{id}, };
-
-    my $admin_staff = $self->model->admin->staff;
-    $admin_staff->create($params);
+    my $admin_staff = $self->model->admin->staff->create($params);
     $self->stash->{staff} = $admin_staff->search_staff_show->staff_row;
     $self->render( template => 'admin/staff/show' );
     return;
@@ -66,28 +64,14 @@ sub show {
 sub edit {
     my $self = shift;
     my $params = +{ id => $self->stash->{id}, };
-
-    my $admin_staff = $self->model->admin->staff;
-    $admin_staff->create($params);
-
-    my $staff_row    = $admin_staff->search_staff_show->staff_row;
-    my $staff_hash   = $staff_row->get_columns;
-    my $address_hash = $staff_row->fetch_address->get_columns;
-
-    $self->stash->{staff} = $staff_row;
-
-    my $edit_from_val = +{
-        %{$staff_hash},
-        name     => $address_hash->{name},
-        rubi     => $address_hash->{rubi},
-        nickname => $address_hash->{nickname},
-        email    => $address_hash->{email},
-    };
+    my $admin_staff = $self->model->admin->staff->create($params);
+    $admin_staff->search_staff_edit;
+    $self->stash->{staff} = $admin_staff->staff_row;
 
     # フィルイン
     my $html = $self->render_to_string( template => 'admin/staff/edit' );
-    my $output = $self->fill_in->fill( \$html, $edit_from_val );
-
+    my $output
+        = $self->fill_in->fill( \$html, $admin_staff->edit_form_params );
     $self->render( text => $output );
     return;
 }

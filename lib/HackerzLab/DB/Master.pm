@@ -40,7 +40,7 @@ HackerzLab::DB::Master - マスターデータオブジェクト
     # 変換したい場合 (定数を求める)
 
     # 5
-    my $authority_const_id = $master->constant('GUEST')->authority->get_id;
+    my $authority_const_id = $master->label('GUEST')->authority->constant;
 
     # row オブジェクトの場合
     my $admin_staff = $self->model->admin->staff;
@@ -63,7 +63,7 @@ HackerzLab::DB::Master - マスターデータオブジェクト
 
 =cut
 
-has [qw{id constant master_hash master_constant_hash}];
+has [qw{id label master_hash master_constant_hash}];
 
 # 呼び出しテスト
 sub welcome {
@@ -113,6 +113,13 @@ sub deleted {
     $self->master_hash($hash);
     $self->master_constant_hash($constant);
     return $self;
+}
+
+sub constant {
+    my $self = shift;
+    my $constant = $self->master_constant_hash->{ $self->label };
+    die 'error master methode constant: ' if !defined $constant;
+    return $constant;
 }
 
 sub get_id {
