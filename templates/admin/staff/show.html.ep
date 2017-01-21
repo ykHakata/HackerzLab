@@ -35,12 +35,8 @@
             <dd class=""><%= $staff->login_id %></dd>
           </li>
           <li class="list-group-item ">
-            <dt class="">ログインパスワード</dt>
-            <dd class="">****</dd>
-          </li>
-          <li class="list-group-item ">
             <dt class="">管理者権限</dt>
-            <dd class=""><%= $staff->authority %></dd>
+            <dd class=""><%= $staff->authority_master->get_name %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">名前</dt>

@@ -1,5 +1,6 @@
 package HackerzLab::DB;
 use Mojo::Base 'HackerzLab::DB::Base';
+use HackerzLab::DB::Master;
 
 =encoding utf8
 
@@ -9,10 +10,12 @@ HackerzLab::DB - データベースオブジェクト (呼び出し)
 
 =cut
 
-# DB 内は拡張する予定がないので Loader やめる
-# 継承しているので base メソッドも不要かもしれない
 has base => sub {
     HackerzLab::DB::Base->new( +{ app => shift->app } );
+};
+
+has master => sub {
+    HackerzLab::DB::Master->new( +{ app => shift->app } );
 };
 
 # 呼び出しテスト

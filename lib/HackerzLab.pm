@@ -2,6 +2,7 @@ package HackerzLab;
 use Mojo::Base 'Mojolicious';
 use HackerzLab::DB;
 use HackerzLab::Model;
+use HTML::FillInForm::Lite;
 
 =encoding utf8
 
@@ -42,6 +43,9 @@ sub startup {
             state $model = HackerzLab::Model->new( +{ app => $self->app } );
         }
     );
+
+    # フィルインフォーム (入力フォームへの埋め込み)
+    $self->helper( fill_in => sub { my $fill_in = HTML::FillInForm::Lite->new(); } );
 
     # コマンドをロードするための他の名前空間
     push @{ $self->commands->namespaces }, 'HackerzLab::Command';

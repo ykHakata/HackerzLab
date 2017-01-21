@@ -791,6 +791,15 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
+  HTML-FillInForm-Lite-1.15
+    pathname: G/GF/GFUJI/HTML-FillInForm-Lite-1.15.tar.gz
+    provides:
+      HTML::FillInForm::Lite 1.15
+      HTML::FillInForm::Lite::Compat 1.15
+    requirements:
+      ExtUtils::MakeMaker 6.59
+      Module::Build::Tiny 0.035
+      perl 5.008001
   MRO-Compat-0.12
     pathname: B/BO/BOBTFISH/MRO-Compat-0.12.tar.gz
     provides:

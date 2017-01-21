@@ -1,5 +1,6 @@
 package HackerzLab::DB::Teng::Row::Staff;
 use Mojo::Base 'Teng::Row';
+use HackerzLab::DB::Master;
 
 =encoding utf8
 
@@ -20,6 +21,12 @@ sub fetch_address {
     return $self->handle->single( 'address',
         +{ staff_id => $self->id, deleted => 0, },
     );
+}
+
+sub authority_master {
+    my $self = shift;
+    my $master = HackerzLab::DB::Master->new( +{ id => $self->authority } );
+    return $master->authority;
 }
 
 1;

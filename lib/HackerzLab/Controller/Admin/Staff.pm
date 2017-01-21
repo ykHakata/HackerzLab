@@ -65,7 +65,30 @@ sub show {
 # 個別編集入力画面
 sub edit {
     my $self = shift;
-    $self->render( text => 'edit' );
+    my $params = +{ id => $self->stash->{id}, };
+
+    my $admin_staff = $self->model->admin->staff;
+    $admin_staff->create($params);
+
+    my $staff_row    = $admin_staff->search_staff_show->staff_row;
+    my $staff_hash   = $staff_row->get_columns;
+    my $address_hash = $staff_row->fetch_address->get_columns;
+
+    $self->stash->{staff} = $staff_row;
+
+    my $edit_from_val = +{
+        %{$staff_hash},
+        name     => $address_hash->{name},
+        rubi     => $address_hash->{rubi},
+        nickname => $address_hash->{nickname},
+        email    => $address_hash->{email},
+    };
+
+    # フィルイン
+    my $html = $self->render_to_string( template => 'admin/staff/edit' );
+    my $output = $self->fill_in->fill( \$html, $edit_from_val );
+
+    $self->render( text => $output );
     return;
 }
 

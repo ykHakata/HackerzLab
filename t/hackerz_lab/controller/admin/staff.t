@@ -1,7 +1,7 @@
 use Mojo::Base -strict;
 use Test::More;
 use Test::Mojo;
-use Mojo::Util qw{dumper url_escape url_unescape encode};
+use Mojo::Util qw{dumper};
 
 # ハッカーシステムテスト共通
 use t::Util;
@@ -140,7 +140,7 @@ subtest 'creata' => sub {
     $t->get_ok('/admin/staff/create')->status_is(200);
 
     # 初期表示
-    my $words = [ '新規登録フォーム' ];
+    my $words = ['新規登録フォーム'];
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
@@ -176,6 +176,35 @@ subtest 'show' => sub {
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
+    t::Util::logout_admin($t);
+};
+
+# 個別編集入力画面
+subtest 'edit' => sub {
+    t::Util::login_admin($t);
+    $t->get_ok('/admin/staff/2/edit')->status_is(200);
+
+    #  入力フォームの存在確認
+    my $tags = [
+        'input[name=id]',       'input[name=login_id]',
+        'input[name=name]',     'input[name=rubi]',
+        'input[name=nickname]', 'input[name=email]',
+    ];
+    for my $tag ( @{$tags} ) {
+        $t->element_exists( $tag, "element check $tag" );
+    }
+
+    # 編集画面の値確認
+    my $words = [
+        '編集登録フォーム', 'hackerz.lab.sudo@gmail.com',
+        '新命 明',               'しんめい あきら',
+        'アオレンジャー',
+    ];
+
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
     t::Util::logout_admin($t);
 };
 
