@@ -42,9 +42,9 @@ subtest 'index' => sub {
     # 一覧を表示できる
     $t->get_ok('/admin/staff')->status_is(200);
 
-# タイトルと確実に表示される 2件目のみを確認テスト
-# 1件目はログインしているので、ヘッダーに表示されてる
-# @ は特別な意味があるので、一度文字列にして
+    # タイトルと確実に表示される 2件目のみを確認テスト
+    # 1件目はログインしているので、ヘッダーに表示
+    # @ は特別な意味があるので、一度文字列にして
     my $words = [ '絞り込み検索', 'hackerz.lab.sudo@gmail.com' ];
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
@@ -71,8 +71,9 @@ subtest 'search' => sub {
     # ログインをする
     t::Util::login_admin($t);
 
-# stash->{staffs} を定義するまえにリクエストすると 500 になるはず
-# こちらテストコードでは再現できない、テストコードは完璧ではないのだ
+    # stash->{staffs} を定義するまえにリクエストすると 500
+    # こちらテストコードでは再現できない、
+    # テストコードは完璧ではないのだ
     $t->get_ok('/admin/staff/search')->status_is(200);
 
     # 特に値をしてせずに検索の場合、初期表示と同じ
@@ -95,7 +96,7 @@ subtest 'search' => sub {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
 
-# 検索に該当しない場合のメッセージ  -> 「検索該当がありません」
+    # 検索に該当しない場合のメッセージ
     $t->get_ok('/admin/staff/search?id=999999&name=')->status_is(200);
     $words = [ '絞り込み検索', '「検索該当がありません」' ];
     for my $word ( @{$words} ) {
@@ -103,8 +104,6 @@ subtest 'search' => sub {
     }
 
     # 名前の検索 address テーブル検索
-    # 9,hackerz.lab.itimatu@gmail.com,itimatu,5,0,2016-01-08 12:24:12,2016-01-08 12:24:12
-    # 9,9,松野 一松,まつの いちまつ,いちまつ,0,2016-01-08 12:24:12,2016-01-08 12:24:12
     my $chars = '松野 一松';
     $t->get_ok( '/admin/staff/search?id=&name=' . $chars )->status_is(200);
     $words = [ '絞り込み検索', 'hackerz.lab.itimatu@gmail.com' ];
@@ -119,7 +118,7 @@ subtest 'search' => sub {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
 
-    # 名前と ID の検索 address テーブル検索 ( ID が違うので失敗する)
+    # address テーブル検索 ( ID が違うので失敗)
     $t->get_ok( '/admin/staff/search?id=99&name=' . $chars )->status_is(200);
     $words = [ '絞り込み検索', '「検索該当がありません」' ];
     for my $word ( @{$words} ) {
@@ -204,6 +203,46 @@ subtest 'edit' => sub {
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
+
+    t::Util::logout_admin($t);
+};
+
+# 新規登録実行
+subtest 'store' => sub {
+    t::Util::login_admin($t);
+
+    my $url    = '/admin/staff';
+    my $params = +{
+        login_id  => 'hackerz.matuzou.system@gmail.com',
+        password  => 'matuzou',
+        password  => 'matuzou',
+        authority => 5,
+        name      => '松野 松造',
+        rubi      => 'まつの まつぞう',
+        nickname  => 'まつぞう',
+        email     => 'hackerz.matuzou.system@gmail.com',
+    };
+
+    # 成功時、一覧画面にリダイレクト
+    $t->post_ok( $url => form => $params )->status_is(302);
+    my $location_url = $t->tx->res->headers->location;
+    $t->get_ok($location_url)->status_is(200);
+
+    # 登録完了のメッセージ
+    my $words = ['新規登録完了しました'];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # DB 登録の確認
+    my $staff_row = $t->app->db->teng->single( 'staff',
+        +{ login_id => $params->{login_id} } );
+
+    my $address_row = $t->app->db->teng->single( 'address',
+        +{ staff_id => $staff_row->id } );
+
+    ok( $staff_row,   'create check staff row' );
+    ok( $address_row, 'create check address row' );
 
     t::Util::logout_admin($t);
 };

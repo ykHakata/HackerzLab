@@ -1,6 +1,7 @@
 package HackerzLab::Model::Admin::Staff;
 use Mojo::Base 'HackerzLab::Model::Base';
 use Mojo::Util qw{dumper};
+use HackerzLab::Util qw{welcome_util now_datetime_to_sqlite};
 
 =encoding utf8
 
@@ -13,12 +14,15 @@ HackerzLab::Model::Admin::Staff - コントローラーモデル (管理機能/�
 has [
     qw{
         req_params
+        req_params_passed
         page
         staff_rows
         staff_row
         pager
         query_staff_id
         edit_form_params
+        validation_has_error
+        validation_msg
         }
 ];
 
@@ -129,7 +133,7 @@ sub with_query_address_name {
 sub search_staff_show {
     my $self = shift;
     $self->search_staff;
-    $self->staff_row( shift @{$self->staff_rows} );
+    $self->staff_row( shift @{ $self->staff_rows } );
     return $self;
 }
 
@@ -137,11 +141,11 @@ sub search_staff_show {
 sub search_staff_edit {
     my $self = shift;
     $self->search_staff;
-    $self->staff_row( shift @{$self->staff_rows} );
+    $self->staff_row( shift @{ $self->staff_rows } );
 
     my $staff_hash   = $self->staff_row->get_columns;
     my $address_hash = $self->staff_row->fetch_address->get_columns;
-    my $params = +{
+    my $params       = +{
         %{$staff_hash},
         name     => $address_hash->{name},
         rubi     => $address_hash->{rubi},
@@ -150,6 +154,97 @@ sub search_staff_edit {
     };
     $self->edit_form_params($params);
     return $self;
+}
+
+# 新規登録パラメーターバリデート
+sub validation_staff_store {
+    my $self = shift;
+
+    my $validation = $self->app->validator->validation;
+    $validation->input( $self->req_params );
+
+    $validation->required('login_id')->size( 1, 100 );
+    $validation->required('password')->size( 1, 100 );
+    $validation->required('authority');
+    $validation->required('name')->size( 1, 100 );
+    $validation->required('rubi')->size( 1, 100 );
+    $validation->required('nickname')->size( 1, 100 );
+    $validation->required('email')->size( 1, 100 );
+
+    my $error = +{
+        login_id  => ['ログインID'],
+        password  => ['ログインパスワード'],
+        authority => ['管理者権限'],
+        name      => ['名前'],
+        rubi      => ['ふりがな'],
+        nickname  => ['表示用ニックネーム'],
+        email     => ['連絡用メールアドレス'],
+    };
+
+    $self->validation_has_error( $validation->has_error );
+    $self->validation_msg(undef);
+
+    if ( $self->validation_has_error ) {
+
+        my $msg;
+        my $names = $validation->failed;
+        for my $name ( @{$names} ) {
+
+            # エラーメッセージセット
+            my $check
+                = $validation->error( $name, $error->{$name} )->error($name);
+            push @{$msg}, shift @{$check};
+        }
+        $self->validation_msg($msg);
+
+        # 失敗時はここで終了
+        $self->req_params_passed(undef);
+        return $self;
+    }
+
+    # 成功の値をセット
+    $self->req_params_passed( $validation->output );
+    return $self;
+}
+
+# 新規登録書き込み実行
+sub exec_staff_store {
+    my $self = shift;
+
+    my $teng   = $self->app->db->teng;
+    my $master = $self->app->db->master;
+
+    # 連続して実行できない場合は無効
+    my $txn = $teng->txn_scope;
+
+    # パラメーター整形
+    my $staff_row = +{
+        login_id  => $self->req_params_passed->{login_id},
+        password  => $self->req_params_passed->{password},
+        authority => $self->req_params_passed->{authority},
+        deleted   => $master->label('NOT_DELETED')->deleted->constant,
+        create_ts => now_datetime_to_sqlite(),
+        modify_ts => now_datetime_to_sqlite(),
+    };
+
+    # staff テーブル書き込み
+    my $staff_id = $teng->fast_insert( 'staff', $staff_row );
+
+    my $address_row = +{
+        staff_id  => $staff_id,
+        name      => $self->req_params_passed->{name},
+        rubi      => $self->req_params_passed->{rubi},
+        nickname  => $self->req_params_passed->{nickname},
+        email     => $self->req_params_passed->{email},
+        deleted   => $master->label('NOT_DELETED')->deleted->constant,
+        create_ts => now_datetime_to_sqlite(),
+        modify_ts => now_datetime_to_sqlite(),
+    };
+
+    # address テーブル書き込み
+    my $address_id = $teng->fast_insert( 'address', $address_row );
+    $txn->commit;
+    return;
 }
 
 1;

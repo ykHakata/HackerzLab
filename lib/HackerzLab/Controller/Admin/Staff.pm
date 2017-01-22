@@ -52,8 +52,8 @@ sub create {
 
 # 個別詳細画面
 sub show {
-    my $self = shift;
-    my $params = +{ id => $self->stash->{id}, };
+    my $self        = shift;
+    my $params      = +{ id => $self->stash->{id}, };
     my $admin_staff = $self->model->admin->staff->create($params);
     $self->stash->{staff} = $admin_staff->search_staff_show->staff_row;
     $self->render( template => 'admin/staff/show' );
@@ -62,8 +62,8 @@ sub show {
 
 # 個別編集入力画面
 sub edit {
-    my $self = shift;
-    my $params = +{ id => $self->stash->{id}, };
+    my $self        = shift;
+    my $params      = +{ id => $self->stash->{id}, };
     my $admin_staff = $self->model->admin->staff->create($params);
     $admin_staff->search_staff_edit;
     $self->stash->{staff} = $admin_staff->staff_row;
@@ -79,7 +79,32 @@ sub edit {
 # 新規登録実行
 sub store {
     my $self = shift;
-    $self->render( text => 'store' );
+
+    # 入力
+    my $admin_staff
+        = $self->model->admin->staff->create( $self->req->params->to_hash );
+
+    # バリデート
+    $admin_staff->validation_staff_store;
+
+    # 失敗、フィルイン、もう一度入力フォーム表示
+    if ( $admin_staff->validation_has_error ) {
+
+        # エラーメッセージ
+        $self->stash->{validation_msg} = $admin_staff->validation_msg;
+        my $html
+            = $self->render_to_string( template => 'admin/staff/create' );
+        my $output = $self->fill_in->fill( \$html, $admin_staff->req_params );
+        $self->render( text => $output );
+        return;
+    }
+
+    # DB 書き込み
+    $admin_staff->exec_staff_store;
+
+    # 書き込み保存終了、管理画面一覧へリダイレクト終了
+    $self->flash( common_msg => '新規登録完了しました' );
+    $self->redirect_to('/admin/staff');
     return;
 }
 
