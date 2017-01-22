@@ -81,13 +81,28 @@ $ carton install
 
 通常の設定だと、コマンドラインで morbo サーバー実行後、web ブラウザ `http://localhost:3000/` で確認可能
 
-
 ```bash
 # WEBフレームワークを起動 (development モード)
 $ carton exec -- morbo script/hackerz_lab
 
 # WEBフレームワークを起動 (testing モード)
 $ carton exec -- morbo --mode testing script/hackerz_lab
+```
+
+サンプルデータの作成
+
+```bash
+# モードの指定がない場合は開発用DBを作成
+$ carton exec -- script/hackerz_lab generate_db
+
+# テスト用DBを作成
+$ carton exec -- script/hackerz_lab generate_db --mode testing
+
+# 本番用DBを作成
+$ carton exec -- script/hackerz_lab generate_db --mode production
+
+# 開発用DBを作成
+$ carton exec -- script/hackerz_lab generate_db --mode development
 ```
 
 テストコードを実行
