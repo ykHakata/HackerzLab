@@ -29,6 +29,28 @@ sub authority_master {
     return $master->authority;
 }
 
+sub insert_staff_with_address {
+    my $self   = shift;
+    my $params = shift;
+
+    die 'not staff, address row'
+        if !$params->{staff_row} || !$params->{address_row};
+
+    # staff テーブル書き込み
+    $params->{address_row}->{staff_id}
+        = $self->handle->fast_insert( 'staff', $params->{staff_row} );
+
+    # address テーブル書き込み
+    my $address_id
+        = $self->handle->fast_insert( 'address', $params->{address_row} );
+
+    my $create_ids = +{
+        staff_id   => $params->{address_row}->{staff_id},
+        address_id => $address_id,
+    };
+    return $create_ids;
+}
+
 1;
 
 __END__

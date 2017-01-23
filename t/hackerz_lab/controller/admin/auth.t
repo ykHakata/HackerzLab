@@ -135,6 +135,12 @@ subtest 'session site' => sub {
     ok( $login_row, 'check login row' );
     is( $row->id,       $login_row->id,       'check login_row' );
     is( $row->login_id, $login_row->login_id, 'check login_row' );
+
+    # ログイン情報取得のヘルパーメソッド
+    $login_row = $t->app->login_staff;
+    ok( $login_row, 'check login row' );
+    is( $row->id,       $login_row->id,       'check login_row' );
+    is( $row->login_id, $login_row->login_id, 'check login_row' );
 };
 
 done_testing();

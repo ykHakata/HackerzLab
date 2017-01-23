@@ -217,32 +217,32 @@ sub exec_staff_store {
     # 連続して実行できない場合は無効
     my $txn = $teng->txn_scope;
 
+    # ログイン情報取得
+    my $login_staff_row = $self->app->login_staff;
+
     # パラメーター整形
-    my $staff_row = +{
-        login_id  => $self->req_params_passed->{login_id},
-        password  => $self->req_params_passed->{password},
-        authority => $self->req_params_passed->{authority},
-        deleted   => $master->label('NOT_DELETED')->deleted->constant,
-        create_ts => now_datetime_to_sqlite(),
-        modify_ts => now_datetime_to_sqlite(),
+    my $params = +{
+        staff_row => +{
+            login_id  => $self->req_params_passed->{login_id},
+            password  => $self->req_params_passed->{password},
+            authority => $self->req_params_passed->{authority},
+            deleted   => $master->label('NOT_DELETED')->deleted->constant,
+            create_ts => now_datetime_to_sqlite(),
+            modify_ts => now_datetime_to_sqlite(),
+        },
+        address_row => +{
+            name      => $self->req_params_passed->{name},
+            rubi      => $self->req_params_passed->{rubi},
+            nickname  => $self->req_params_passed->{nickname},
+            email     => $self->req_params_passed->{email},
+            deleted   => $master->label('NOT_DELETED')->deleted->constant,
+            create_ts => now_datetime_to_sqlite(),
+            modify_ts => now_datetime_to_sqlite(),
+        },
     };
 
-    # staff テーブル書き込み
-    my $staff_id = $teng->fast_insert( 'staff', $staff_row );
+    my $create_ids = $login_staff_row->insert_staff_with_address($params);
 
-    my $address_row = +{
-        staff_id  => $staff_id,
-        name      => $self->req_params_passed->{name},
-        rubi      => $self->req_params_passed->{rubi},
-        nickname  => $self->req_params_passed->{nickname},
-        email     => $self->req_params_passed->{email},
-        deleted   => $master->label('NOT_DELETED')->deleted->constant,
-        create_ts => now_datetime_to_sqlite(),
-        modify_ts => now_datetime_to_sqlite(),
-    };
-
-    # address テーブル書き込み
-    my $address_id = $teng->fast_insert( 'address', $address_row );
     $txn->commit;
     return;
 }

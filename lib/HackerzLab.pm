@@ -69,7 +69,11 @@ sub startup {
 
                 # セッション情報からログイン者の情報を取得
                 $admin_auth->login_id( $c->session('login_id') );
-                return $admin_auth->exists_login_id if $admin_auth->login_id;
+                if ( $admin_auth->login_id ) {
+                    my $staff_row = $admin_auth->exists_login_id;
+                    $self->helper( login_staff => sub {$staff_row} );
+                    return;
+                }
 
                 # セッション無き場合ログインページへ
                 $c->flash( login_guide => 'ログインが必要です' );
