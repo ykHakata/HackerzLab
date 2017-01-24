@@ -14,14 +14,22 @@ sub login {
     my $self = shift;
 
     my $params     = $self->req->params->to_hash;
-    my $admin_auth = $self->model->admin->auth;
+    my $admin_auth = $self->model->admin->auth->create($params);
 
-    # バリデーション (後ほど実装)
+    # バリデート
+    $admin_auth->validation_auth_login;
 
-# TODO: 暫定、失敗時は公式トップへリダイレクト、後ほどフィルインにする
+    # 失敗、フィルイン、もう一度入力フォーム表示
+    if ( $admin_auth->validation_has_error ) {
 
-    # 認証作業一式のはじまり
-    return $self->redirect_to('/') if !$admin_auth->create($params);
+       # エラーメッセージ
+       $self->stash->{validation_msg} = $admin_auth->validation_msg;
+       my $html
+           = $self->render_to_string( template => 'admin/login' );
+       my $output = $self->fill_in->fill( \$html, $admin_auth->req_params );
+       $self->render( text => $output );
+       return;
+   }
 
     # staff, login_id 存在確認
     return $self->redirect_to('/') if !$admin_auth->exists_login_id();

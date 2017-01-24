@@ -55,10 +55,7 @@ sub startup {
         before_dispatch => sub {
             my $c          = shift;
             my $url        = $c->req->url;
-            my $admin_auth = $self->model->admin->auth;
-
-            $admin_auth->login_row(undef);
-            $admin_auth->login_id(undef);
+            my $admin_auth = $self->model->admin->auth->create();
 
             # ログイン、ログアウトページは例外
             return if $url =~ m{^/admin/login};

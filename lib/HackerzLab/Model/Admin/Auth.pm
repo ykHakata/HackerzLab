@@ -10,7 +10,19 @@ HackerzLab::Model::Admin::Auth - コントローラーモデル (管理機能/�
 
 =cut
 
-has [qw{login_id login_row password decrypt_password encrypt_session_id}];
+has [
+    qw{
+        req_params
+        req_params_passed
+        login_id
+        login_row
+        password
+        decrypt_password
+        encrypt_session_id
+        validation_has_error
+        validation_msg
+        }
+];
 
 # 呼び出しテスト
 sub welcome {
@@ -22,19 +34,26 @@ sub welcome {
 sub create {
     my $self   = shift;
     my $params = shift;
+    $self->req_params($params);
+    if ( $params->{email} ) {
+        $params->{login_id} = $params->{email};
+    }
 
     # アクセスメソッドへ
-    $self->login_id( $params->{email} );
+    $self->login_id( $params->{login_id} );
     $self->password( $params->{password} );
-    return if !$self->login_id || !$self->password;
+    $self->login_row(undef);
     return $self;
 }
 
 # DB 存在確認
 sub exists_login_id {
     my $self = shift;
-    my $row  = $self->app->db->teng->single( 'staff',
-        +{ login_id => $self->login_id } );
+    return if !$self->login_id;
+    my $NOT_DELETED
+        = $self->app->db->master->label('NOT_DELETED')->deleted->constant;
+    my $row = $self->app->db->teng->single( 'staff',
+        +{ login_id => $self->login_id, deleted => $NOT_DELETED, } );
     return if !$row;
     $self->login_row($row);
     return $row;
@@ -43,6 +62,7 @@ sub exists_login_id {
 # password 確認
 sub check_password {
     my $self = shift;
+    return if !$self->password;
 
     # TODO: password を復号化して照合 (後ほど実装)
     # decrypt (復号化) || encrypt (暗号化)
@@ -75,6 +95,47 @@ sub encrypt_exec_session_id {
     # 現状は常に成功
     return 1;
     return;
+}
+
+# 新規登録パラメーターバリデート
+sub validation_auth_login {
+    my $self = shift;
+
+    my $validation = $self->app->validator->validation;
+    $validation->input( $self->req_params );
+
+    $validation->required('email')->size( 1, 100 );
+    $validation->required('password')->size( 1, 100 );
+
+    my $error = +{
+        email    => ['ログインID(email)'],
+        password => ['ログインパスワード'],
+    };
+
+    $self->validation_has_error( $validation->has_error );
+    $self->validation_msg(undef);
+
+    if ( $self->validation_has_error ) {
+
+        my $msg;
+        my $names = $validation->failed;
+        for my $name ( @{$names} ) {
+
+            # エラーメッセージセット
+            my $check
+                = $validation->error( $name, $error->{$name} )->error($name);
+            push @{$msg}, shift @{$check};
+        }
+        $self->validation_msg($msg);
+
+        # 失敗時はここで終了
+        $self->req_params_passed(undef);
+        return $self;
+    }
+
+    # 成功の値をセット
+    $self->req_params_passed( $validation->output );
+    return $self;
 }
 
 1;
