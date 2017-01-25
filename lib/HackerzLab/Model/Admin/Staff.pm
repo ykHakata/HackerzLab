@@ -13,16 +13,12 @@ HackerzLab::Model::Admin::Staff - コントローラーモデル (管理機能/�
 
 has [
     qw{
-        req_params
-        req_params_passed
         page
         staff_rows
         staff_row
         pager
         query_staff_id
         edit_form_params
-        validation_has_error
-        validation_msg
         }
 ];
 
@@ -153,57 +149,6 @@ sub search_staff_edit {
         email    => $address_hash->{email},
     };
     $self->edit_form_params($params);
-    return $self;
-}
-
-# 新規登録パラメーターバリデート
-sub validation_staff_store {
-    my $self = shift;
-
-    my $validation = $self->app->validator->validation;
-    $validation->input( $self->req_params );
-
-    $validation->required('login_id')->size( 1, 100 );
-    $validation->required('password')->size( 1, 100 );
-    $validation->required('authority');
-    $validation->required('name')->size( 1, 100 );
-    $validation->required('rubi')->size( 1, 100 );
-    $validation->required('nickname')->size( 1, 100 );
-    $validation->required('email')->size( 1, 100 );
-
-    my $error = +{
-        login_id  => ['ログインID'],
-        password  => ['ログインパスワード'],
-        authority => ['管理者権限'],
-        name      => ['名前'],
-        rubi      => ['ふりがな'],
-        nickname  => ['表示用ニックネーム'],
-        email     => ['連絡用メールアドレス'],
-    };
-
-    $self->validation_has_error( $validation->has_error );
-    $self->validation_msg(undef);
-
-    if ( $self->validation_has_error ) {
-
-        my $msg;
-        my $names = $validation->failed;
-        for my $name ( @{$names} ) {
-
-            # エラーメッセージセット
-            my $check
-                = $validation->error( $name, $error->{$name} )->error($name);
-            push @{$msg}, shift @{$check};
-        }
-        $self->validation_msg($msg);
-
-        # 失敗時はここで終了
-        $self->req_params_passed(undef);
-        return $self;
-    }
-
-    # 成功の値をセット
-    $self->req_params_passed( $validation->output );
     return $self;
 }
 

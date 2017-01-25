@@ -244,6 +244,16 @@ subtest 'store' => sub {
     ok( $staff_row,   'create check staff row' );
     ok( $address_row, 'create check address row' );
 
+    # 失敗時
+    $params->{login_id} = '';
+    $t->post_ok( $url => form => $params )->status_is(200);
+
+    # 失敗時のメッセージ
+    $words = [ '下記のフォームに正しく入力してください' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
     t::Util::logout_admin($t);
 };
 

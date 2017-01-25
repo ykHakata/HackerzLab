@@ -17,7 +17,7 @@ sub login {
     my $admin_auth = $self->model->admin->auth->create($params);
 
     # バリデート
-    $admin_auth->validation_auth_login;
+    $admin_auth->validator_customize('admin_auth_login');
 
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_auth->validation_has_error ) {

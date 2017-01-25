@@ -12,15 +12,11 @@ HackerzLab::Model::Admin::Auth - コントローラーモデル (管理機能/�
 
 has [
     qw{
-        req_params
-        req_params_passed
         login_id
         login_row
         password
         decrypt_password
         encrypt_session_id
-        validation_has_error
-        validation_msg
         }
 ];
 
@@ -95,47 +91,6 @@ sub encrypt_exec_session_id {
     # 現状は常に成功
     return 1;
     return;
-}
-
-# 新規登録パラメーターバリデート
-sub validation_auth_login {
-    my $self = shift;
-
-    my $validation = $self->app->validator->validation;
-    $validation->input( $self->req_params );
-
-    $validation->required('email')->size( 1, 100 );
-    $validation->required('password')->size( 1, 100 );
-
-    my $error = +{
-        email    => ['ログインID(email)'],
-        password => ['ログインパスワード'],
-    };
-
-    $self->validation_has_error( $validation->has_error );
-    $self->validation_msg(undef);
-
-    if ( $self->validation_has_error ) {
-
-        my $msg;
-        my $names = $validation->failed;
-        for my $name ( @{$names} ) {
-
-            # エラーメッセージセット
-            my $check
-                = $validation->error( $name, $error->{$name} )->error($name);
-            push @{$msg}, shift @{$check};
-        }
-        $self->validation_msg($msg);
-
-        # 失敗時はここで終了
-        $self->req_params_passed(undef);
-        return $self;
-    }
-
-    # 成功の値をセット
-    $self->req_params_passed( $validation->output );
-    return $self;
 }
 
 1;

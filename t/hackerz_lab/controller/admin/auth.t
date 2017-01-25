@@ -90,6 +90,16 @@ subtest 'auth check' => sub {
     $t->get_ok($location_url)->status_is(200);
     $session_id = $t->app->build_controller( $t->tx )->session('login_id');
     is( $session_id, undef, 'session_id' );
+
+    # バリデーション失敗時
+    $params->{email} = '';
+    $t->post_ok( $url => form => $params )->status_is(200);
+
+    # 失敗時のメッセージ
+    my $words = [ '下記のフォームに正しく入力してください' ];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
 };
 
 # ログインセッションで保護されたページ

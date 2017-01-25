@@ -85,7 +85,7 @@ sub store {
         = $self->model->admin->staff->create( $self->req->params->to_hash );
 
     # バリデート
-    $admin_staff->validation_staff_store;
+    $admin_staff->validator_customize('admin_staff_store');
 
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_staff->validation_has_error ) {
