@@ -86,11 +86,11 @@ sub validation_exists_login_id {
 
     my $validation = $validator->validation;
     $validation->input( $self->req_params );
-    my $value = $validation->param('email');
-    $validation->required('email')->exists_login_id($value);
+    my $value = $validation->param('login_id');
+    $validation->required('login_id')->exists_login_id($value);
 
     $self->validation_set_error_msg(
-        +{ email => ['ログインID(email)が存在しません'], } );
+        +{ login_id => ['ログインID(email)が存在しません'], } );
     return $validation;
 }
 
@@ -101,11 +101,11 @@ sub validation_admin_auth_login {
     my $validation = $self->app->validator->validation;
     $validation->input( $self->req_params );
 
-    $validation->required('email')->size( 1, 100 );
+    $validation->required('login_id')->size( 1, 100 );
     $validation->required('password')->size( 1, 100 );
 
     $self->validation_set_error_msg(
-        +{  email    => ['ログインID(email)'],
+        +{  login_id => ['ログインID(email)'],
             password => ['ログインパスワード'],
         }
     );

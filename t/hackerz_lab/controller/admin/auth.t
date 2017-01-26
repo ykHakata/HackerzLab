@@ -3,6 +3,7 @@ use Mojo::Base -strict;
 use Test::More;
 use Test::Mojo;
 use Mojo::Util qw{dumper};
+
 # データ構造をダンプする
 use Data::Dumper;
 
@@ -15,34 +16,37 @@ my $t = t::Util::init();
 # ルーティングの詳細テスト
 subtest 'router' => sub {
 
-  # 302リダイレクトレスポンスの許可
-  $t->ua->max_redirects(1);
+    # 302リダイレクトレスポンスの許可
+    $t->ua->max_redirects(1);
 
-  # 例： login の場合
-  # GET /admin/login -> ( controller => 'Admin::Auth', action => 'index' );
-  $t->get_ok('/admin/login')->status_is(200);
+    # 例： login の場合
+    # GET /admin/login -> ( controller => 'Admin::Auth', action => 'index' );
+    $t->get_ok('/admin/login')->status_is(200);
 
-  # POST /admin/login -> ( controller => 'Admin::Auth', action => 'login' );
-  $t->post_ok('/admin/login')->status_is(200);
+    # POST /admin/login -> ( controller => 'Admin::Auth', action => 'login' );
+    $t->post_ok('/admin/login')->status_is(200);
 
   # 例： logout の場合
   # POST /admin/logout -> ( controller => 'Admin::Auth', action => 'logout' );
-  $t->post_ok('/admin/logout')->status_is(200);
+    $t->post_ok('/admin/logout')->status_is(200);
 
-  # GET /admin/logout -> ( controller => 'Admin::Auth', action => 'logout' );
-  $t->get_ok('/admin/logout')->status_is(200);
+   # GET /admin/logout -> ( controller => 'Admin::Auth', action => 'logout' );
+    $t->get_ok('/admin/logout')->status_is(200);
 
-  # 必ず戻すように ...
-  $t->ua->max_redirects(0);
+    # 必ず戻すように ...
+    $t->ua->max_redirects(0);
 };
 
 # menu 画面の描画テスト
 subtest 'login logout display' => sub {
-  # ログイン画面を表示
-  $t->get_ok('/admin/login')->status_is(200)->content_like(qr/管理者認証/i);
 
-  # ログアウト実行完了画面描画
-  $t->get_ok('/admin/logout')->status_is(200)->content_like(qr/ログアウト/i);
+    # ログイン画面を表示
+    $t->get_ok('/admin/login')->status_is(200)
+        ->content_like(qr/管理者認証/i);
+
+    # ログアウト実行完了画面描画
+    $t->get_ok('/admin/logout')->status_is(200)
+        ->content_like(qr/ログアウト/i);
 };
 
 # 認証機能のテスト
@@ -55,7 +59,7 @@ subtest 'auth check' => sub {
     # ログインへのアクセス
     my $url    = '/admin/login';
     my $params = +{
-        email    => $row->login_id,
+        login_id => $row->login_id,
         password => $row->password,
     };
 
@@ -92,14 +96,23 @@ subtest 'auth check' => sub {
     is( $session_id, undef, 'session_id' );
 
     # バリデーション失敗時
-    $params->{email} = '';
+    $params->{login_id} = '';
     $t->post_ok( $url => form => $params )->status_is(200);
 
     # 失敗時のメッセージ
-    my $words = [ '下記のフォームに正しく入力してください' ];
+    my $words = ['下記のフォームに正しく入力してください'];
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
+
+
+    #  入力フォームの存在確認
+    $t->get_ok('/admin/login')->status_is(200);
+    my $tags = [ 'input[name=login_id]', 'input[name=password]', ];
+    for my $tag ( @{$tags} ) {
+        $t->element_exists( $tag, "element check $tag" );
+    }
+
 };
 
 # ログインセッションで保護されたページ
@@ -126,7 +139,7 @@ subtest 'session site' => sub {
     # ログインへのアクセス
     $url = '/admin/login';
     my $params = +{
-        email    => $row->login_id,
+        login_id => $row->login_id,
         password => $row->password,
     };
 

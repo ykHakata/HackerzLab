@@ -36,7 +36,7 @@ sub login_admin {
     ok($row);
 
     my $params = +{
-        email    => $row->login_id,
+        login_id => $row->login_id,
         password => $row->password,
     };
 

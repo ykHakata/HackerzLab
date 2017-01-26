@@ -31,9 +31,6 @@ sub create {
     my $self   = shift;
     my $params = shift;
     $self->req_params($params);
-    if ( $params->{email} ) {
-        $params->{login_id} = $params->{email};
-    }
 
     # アクセスメソッドへ
     $self->login_id( $params->{login_id} );
