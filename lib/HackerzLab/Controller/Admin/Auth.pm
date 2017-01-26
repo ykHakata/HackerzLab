@@ -24,6 +24,11 @@ sub login {
         $admin_auth->validator_customize('exists_login_id');
     }
 
+    # password 照合
+    if ( $admin_auth->validation_is_valid ) {
+        $admin_auth->validator_customize('check_password');
+    }
+
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_auth->validation_has_error ) {
 
@@ -35,11 +40,8 @@ sub login {
         return;
     }
 
-    # staff, login_id 存在確認
-    return $self->redirect_to('/') if !$admin_auth->exists_login_id();
-
-    # password 照合
-    return $self->redirect_to('/') if !$admin_auth->check_password();
+    # 合格の値を再配置
+    $admin_auth->setup_req_params;
 
     # セッション用 id 暗号化
     $admin_auth->encrypt_exec_session_id();
@@ -51,6 +53,7 @@ sub login {
     $self->flash( msg => $admin_auth->login_row->login_id );
 
     # 管理画面トップへ
+    $admin_auth->login_row(undef);
     $self->redirect_to('/admin/menu');
     return;
 }

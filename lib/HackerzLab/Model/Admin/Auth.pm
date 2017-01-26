@@ -90,6 +90,26 @@ sub encrypt_exec_session_id {
     return;
 }
 
+# 合格の値を再配置
+sub setup_req_params {
+    my $self = shift;
+    $self->login_row( $self->validation_login_staff );
+    $self->validation_login_staff(undef);
+    return $self;
+}
+
+# ログインしている staff 情報取得
+sub get_login_staff {
+    my $self = shift;
+    return if !$self->login_id;
+    my $NOT_DELETED
+        = $self->app->db->master->label('NOT_DELETED')->deleted->constant;
+    my $row = $self->app->db->teng->single( 'staff',
+        +{ login_id => $self->login_id, deleted => $NOT_DELETED, } );
+    return if !$row;
+    return $row;
+}
+
 1;
 
 __END__

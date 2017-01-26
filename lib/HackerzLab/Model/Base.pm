@@ -1,6 +1,6 @@
 package HackerzLab::Model::Base;
 use Mojo::Base -base;
-
+use Mojo::Util qw{dumper};
 =encoding utf8
 
 =head1 NAME
@@ -18,6 +18,7 @@ has [
         validation_is_valid
         validation_msg
         validation_set_error_msg
+        validation_login_staff
         }
 ];
 
@@ -79,6 +80,7 @@ sub validation_exists_login_id {
                 ->deleted->constant;
             my $row = $self->app->db->teng->single( 'staff',
                 +{ login_id => $self->login_id, deleted => $NOT_DELETED, } );
+            $self->validation_login_staff($row);
             return 1 if !$row;
             return;
         }
@@ -91,6 +93,35 @@ sub validation_exists_login_id {
 
     $self->validation_set_error_msg(
         +{ login_id => ['ログインID(email)が存在しません'], } );
+    return $validation;
+}
+
+# password 照合
+sub validation_check_password {
+    my $self = shift;
+
+    my $validator = $self->app->validator;
+
+    $validator->add_check(
+        check_password => sub {
+
+            # TODO DB のパスワードは暗号化される予定
+            # $row->password を複合化して照合
+            # return if $password eq $self->decrypt($row->password);
+            my ( $validation, $name, $password, ) = @_;
+            my $row = $self->validation_login_staff;
+            return 1 if !$row;
+            return   if $password eq $row->password;
+            return 1;
+        }
+    );
+
+    my $validation = $validator->validation;
+    $validation->input( $self->req_params );
+    my $value = $validation->param('password');
+    $validation->required('password')->check_password($value);
+    $self->validation_set_error_msg(
+        +{ password => ['ログインパスワードがちがいます'] } );
     return $validation;
 }
 

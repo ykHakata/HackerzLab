@@ -56,6 +56,7 @@ sub startup {
             my $c          = shift;
             my $url        = $c->req->url;
             my $admin_auth = $self->model->admin->auth->create();
+            $self->helper( login_staff => sub {undef} );
 
             # ログイン、ログアウトページは例外
             return if $url =~ m{^/admin/login};
@@ -67,7 +68,7 @@ sub startup {
                 # セッション情報からログイン者の情報を取得
                 $admin_auth->login_id( $c->session('login_id') );
                 if ( $admin_auth->login_id ) {
-                    my $staff_row = $admin_auth->exists_login_id;
+                    my $staff_row = $admin_auth->get_login_staff;
                     $self->helper( login_staff => sub {$staff_row} );
                     return;
                 }

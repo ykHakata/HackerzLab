@@ -105,6 +105,23 @@ subtest 'auth check' => sub {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
 
+    # ログインID が違う
+    $params->{login_id} = 'hackerz@gmail.com';
+    # $params->{password} = '12345';
+    $t->post_ok( $url => form => $params )->status_is(200);
+    $words = ['下記のフォームに正しく入力してください'];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # パスワードが違う
+    $params->{login_id} = $row->login_id;
+    $params->{password} = '12345';
+    $t->post_ok( $url => form => $params )->status_is(200);
+    $words = ['下記のフォームに正しく入力してください'];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
 
     #  入力フォームの存在確認
     $t->get_ok('/admin/login')->status_is(200);
@@ -112,7 +129,6 @@ subtest 'auth check' => sub {
     for my $tag ( @{$tags} ) {
         $t->element_exists( $tag, "element check $tag" );
     }
-
 };
 
 # ログインセッションで保護されたページ
@@ -128,6 +144,9 @@ subtest 'session site' => sub {
 
     # ログイン情報がないことを確認
     my $login_row = $t->app->model->admin->auth->login_row;
+    is( $login_row, undef, 'check login row' );
+
+    $login_row = $t->app->login_staff;
     is( $login_row, undef, 'check login row' );
 
     # ログイン状態でアクセス
@@ -154,10 +173,9 @@ subtest 'session site' => sub {
     $t->get_ok($url)->status_is(200);
 
     # ログイン情報の確認
+    # login_row からの取得は禁止
     $login_row = $t->app->model->admin->auth->login_row;
-    ok( $login_row, 'check login row' );
-    is( $row->id,       $login_row->id,       'check login_row' );
-    is( $row->login_id, $login_row->login_id, 'check login_row' );
+    is( $login_row, undef, 'check login row' );
 
     # ログイン情報取得のヘルパーメソッド
     $login_row = $t->app->login_staff;
