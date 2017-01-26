@@ -15,6 +15,7 @@ has [
         req_params
         req_params_passed
         validation_has_error
+        validation_is_valid
         validation_msg
         validation_set_error_msg
         }
@@ -38,6 +39,7 @@ sub validator_customize {
     my $error      = $self->validation_set_error_msg;
 
     $self->validation_has_error( $validation->has_error );
+    $self->validation_is_valid( $validation->is_valid );
     $self->validation_msg(undef);
 
     if ( $self->validation_has_error ) {
@@ -61,6 +63,35 @@ sub validator_customize {
     # 成功の値をセット
     $self->req_params_passed( $validation->output );
     return $self;
+}
+
+# DB 存在確認
+sub validation_exists_login_id {
+    my $self = shift;
+
+    my $validator = $self->app->validator;
+
+    $validator->add_check(
+        exists_login_id => sub {
+            my ( $validation, $name, $login_id, ) = @_;
+            my $NOT_DELETED
+                = $self->app->db->master->label('NOT_DELETED')
+                ->deleted->constant;
+            my $row = $self->app->db->teng->single( 'staff',
+                +{ login_id => $self->login_id, deleted => $NOT_DELETED, } );
+            return 1 if !$row;
+            return;
+        }
+    );
+
+    my $validation = $validator->validation;
+    $validation->input( $self->req_params );
+    my $value = $validation->param('email');
+    $validation->required('email')->exists_login_id($value);
+
+    $self->validation_set_error_msg(
+        +{ email => ['ログインID(email)が存在しません'], } );
+    return $validation;
 }
 
 # 新規登録パラメーターバリデート

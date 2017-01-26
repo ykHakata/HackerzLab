@@ -19,17 +19,21 @@ sub login {
     # バリデート
     $admin_auth->validator_customize('admin_auth_login');
 
+    # staff, login_id 存在確認
+    if ( $admin_auth->validation_is_valid ) {
+        $admin_auth->validator_customize('exists_login_id');
+    }
+
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_auth->validation_has_error ) {
 
-       # エラーメッセージ
-       $self->stash->{validation_msg} = $admin_auth->validation_msg;
-       my $html
-           = $self->render_to_string( template => 'admin/login' );
-       my $output = $self->fill_in->fill( \$html, $admin_auth->req_params );
-       $self->render( text => $output );
-       return;
-   }
+        # エラーメッセージ
+        $self->stash->{validation_msg} = $admin_auth->validation_msg;
+        my $html = $self->render_to_string( template => 'admin/login' );
+        my $output = $self->fill_in->fill( \$html, $admin_auth->req_params );
+        $self->render( text => $output );
+        return;
+    }
 
     # staff, login_id 存在確認
     return $self->redirect_to('/') if !$admin_auth->exists_login_id();
