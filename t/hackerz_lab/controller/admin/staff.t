@@ -249,7 +249,20 @@ subtest 'store' => sub {
     $t->post_ok( $url => form => $params )->status_is(200);
 
     # 失敗時のメッセージ
-    $words = [ '下記のフォームに正しく入力してください' ];
+    $words = ['下記のフォームに正しく入力してください'];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # login_id 二重登録防止
+    $params->{login_id} = 'hackerz.lab.system@gmail.com';
+    $t->post_ok( $url => form => $params )->status_is(200);
+
+    # 失敗時のメッセージ
+    $words = [
+        '下記のフォームに正しく入力してください',
+        '入力されたログインID(email)はすでに登録済みです',
+    ];
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }

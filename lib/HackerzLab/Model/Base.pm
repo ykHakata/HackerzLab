@@ -1,6 +1,7 @@
 package HackerzLab::Model::Base;
 use Mojo::Base -base;
 use Mojo::Util qw{dumper};
+
 =encoding utf8
 
 =head1 NAME
@@ -66,12 +67,39 @@ sub validator_customize {
     return $self;
 }
 
+# login_id 二重登録防止
+sub validation_not_exists_login_id {
+    my $self      = shift;
+    my $validator = $self->app->validator;
+    $validator->add_check(
+        not_exists_login_id => sub {
+            my ( $validation, $name, $login_id, ) = @_;
+            my $NOT_DELETED
+                = $self->app->db->master->label('NOT_DELETED')
+                ->deleted->constant;
+            my $row = $self->app->db->teng->single( 'staff',
+                +{ login_id => $login_id, deleted => $NOT_DELETED, } );
+            return 1 if $row;
+            return;
+        }
+    );
+    my $validation = $validator->validation;
+    $validation->input( $self->req_params );
+    my $value = $validation->param('login_id');
+    $validation->required('login_id')->not_exists_login_id($value);
+    $self->validation_set_error_msg(
+        +{  login_id => [
+                '入力されたログインID(email)はすでに登録済みです'
+            ],
+        }
+    );
+    return $validation;
+}
+
 # DB 存在確認
 sub validation_exists_login_id {
-    my $self = shift;
-
+    my $self      = shift;
     my $validator = $self->app->validator;
-
     $validator->add_check(
         exists_login_id => sub {
             my ( $validation, $name, $login_id, ) = @_;
@@ -79,18 +107,16 @@ sub validation_exists_login_id {
                 = $self->app->db->master->label('NOT_DELETED')
                 ->deleted->constant;
             my $row = $self->app->db->teng->single( 'staff',
-                +{ login_id => $self->login_id, deleted => $NOT_DELETED, } );
+                +{ login_id => $login_id, deleted => $NOT_DELETED, } );
             $self->validation_login_staff($row);
             return 1 if !$row;
             return;
         }
     );
-
     my $validation = $validator->validation;
     $validation->input( $self->req_params );
     my $value = $validation->param('login_id');
     $validation->required('login_id')->exists_login_id($value);
-
     $self->validation_set_error_msg(
         +{ login_id => ['ログインID(email)が存在しません'], } );
     return $validation;

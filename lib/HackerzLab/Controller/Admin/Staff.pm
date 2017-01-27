@@ -87,6 +87,11 @@ sub store {
     # バリデート
     $admin_staff->validator_customize('admin_staff_store');
 
+    # login_id 二重登録防止
+    if ( $admin_staff->validation_is_valid ) {
+        $admin_staff->validator_customize('not_exists_login_id');
+    }
+
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_staff->validation_has_error ) {
 
