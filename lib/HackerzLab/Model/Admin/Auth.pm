@@ -13,7 +13,6 @@ HackerzLab::Model::Admin::Auth - コントローラーモデル (管理機能/�
 has [
     qw{
         login_id
-        login_row
         password
         decrypt_password
         encrypt_session_id
@@ -35,21 +34,7 @@ sub create {
     # アクセスメソッドへ
     $self->login_id( $params->{login_id} );
     $self->password( $params->{password} );
-    $self->login_row(undef);
     return $self;
-}
-
-# DB 存在確認
-sub exists_login_id {
-    my $self = shift;
-    return if !$self->login_id;
-    my $NOT_DELETED
-        = $self->app->db->master->label('NOT_DELETED')->deleted->constant;
-    my $row = $self->app->db->teng->single( 'staff',
-        +{ login_id => $self->login_id, deleted => $NOT_DELETED, } );
-    return if !$row;
-    $self->login_row($row);
-    return $row;
 }
 
 # password 確認
@@ -71,7 +56,7 @@ sub decrypt_exec_password {
     my $self = shift;
 
     # TODO: 後ほど暗号、復号のロジックを
-    $self->decrypt_password( $self->login_row->password );
+    $self->decrypt_password( $self->password );
 
     # 現状は常に成功
     return 1;
@@ -83,7 +68,7 @@ sub encrypt_exec_session_id {
     my $self = shift;
 
     # TODO: 後ほど暗号、復号のロジックを
-    $self->encrypt_session_id( $self->login_row->login_id );
+    $self->encrypt_session_id( $self->login_id );
 
     # 現状は常に成功
     return 1;
@@ -93,7 +78,8 @@ sub encrypt_exec_session_id {
 # 合格の値を再配置
 sub setup_req_params {
     my $self = shift;
-    $self->login_row( $self->validation_login_staff );
+    $self->login_id( $self->validation_login_staff->login_id );
+    $self->password( $self->validation_login_staff->password );
     $self->validation_login_staff(undef);
     return $self;
 }

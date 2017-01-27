@@ -50,10 +50,9 @@ sub login {
     $self->session( login_id => $admin_auth->encrypt_session_id() );
 
     # ログイン成功メッセージ埋め込み
-    $self->flash( msg => $admin_auth->login_row->login_id );
+    $self->flash( msg => $admin_auth->login_id );
 
     # 管理画面トップへ
-    $admin_auth->login_row(undef);
     $self->redirect_to('/admin/menu');
     return;
 }

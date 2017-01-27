@@ -143,11 +143,8 @@ subtest 'session site' => sub {
     $t->header_is( location => $location_url );
 
     # ログイン情報がないことを確認
-    my $login_row = $t->app->model->admin->auth->login_row;
-    is( $login_row, undef, 'check login row' );
-
-    $login_row = $t->app->login_staff;
-    is( $login_row, undef, 'check login row' );
+    my $login_staff = $t->app->login_staff;
+    is( $login_staff, undef, 'check login staff' );
 
     # ログイン状態でアクセス
 
@@ -172,16 +169,11 @@ subtest 'session site' => sub {
     $url = '/admin/menu';
     $t->get_ok($url)->status_is(200);
 
-    # ログイン情報の確認
-    # login_row からの取得は禁止
-    $login_row = $t->app->model->admin->auth->login_row;
-    is( $login_row, undef, 'check login row' );
-
     # ログイン情報取得のヘルパーメソッド
-    $login_row = $t->app->login_staff;
-    ok( $login_row, 'check login row' );
-    is( $row->id,       $login_row->id,       'check login_row' );
-    is( $row->login_id, $login_row->login_id, 'check login_row' );
+    $login_staff = $t->app->login_staff;
+    ok( $login_staff, 'check login staff' );
+    is( $row->id,       $login_staff->id,       'check login staff' );
+    is( $row->login_id, $login_staff->login_id, 'check login staff' );
 };
 
 done_testing();
