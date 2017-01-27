@@ -50,7 +50,7 @@ sub login {
     $self->session( login_id => $admin_auth->encrypt_session_id() );
 
     # ログイン成功メッセージ埋め込み
-    $self->flash( msg => $admin_auth->login_id );
+    $self->flash( flash_msg => $admin_auth->login_id . ' ログインしました');
 
     # 管理画面トップへ
     $self->redirect_to('/admin/menu');

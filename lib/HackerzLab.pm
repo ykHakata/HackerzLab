@@ -74,7 +74,7 @@ sub startup {
                 }
 
                 # セッション無き場合ログインページへ
-                $c->flash( login_guide => 'ログインが必要です' );
+                $c->flash( flash_msg => 'ログインが必要です' );
                 $c->redirect_to('/admin/login');
                 return;
             }

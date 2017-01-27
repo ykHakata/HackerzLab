@@ -64,20 +64,14 @@
     </nav>
     <!-- /ヘッダー -->
     <!-- コンテンツ -->
-    % if (my $login_guide = flash('login_guide')) {
-    <div class="text-center"><mark><strong><%= $login_guide %></strong></mark></div>
-    % }
-    % if (my $flash_msg = flash('msg')) {
-    <div class="text-center"><mark><strong><%= $flash_msg %></strong>ログインしました</mark></div>
-    % }
     <!-- 汎用のメッセージ -->
     % if (my $stash_msg = stash('msg')) {
     <div class="text-center"><mark><strong><%= $stash_msg %></strong></mark></div>
     % }
     <!-- /汎用のメッセージ -->
     <!-- 汎用のメッセージ、リダイレクト時 -->
-    % if (my $common_msg = flash('common_msg')) {
-    <div class="text-center"><mark><strong><%= $common_msg %></strong></mark></div>
+    % if (my $flash_msg = flash('flash_msg')) {
+    <div class="text-center"><mark><strong><%= $flash_msg %></strong></mark></div>
     % }
     <!-- /汎用のメッセージ、リダイレクト時 -->
     <!-- バリデーションエラー -->

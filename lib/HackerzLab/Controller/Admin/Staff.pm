@@ -103,7 +103,7 @@ sub store {
     $admin_staff->exec_staff_store;
 
     # 書き込み保存終了、管理画面一覧へリダイレクト終了
-    $self->flash( common_msg => '新規登録完了しました' );
+    $self->flash( flash_msg => '新規登録完了しました' );
     $self->redirect_to('/admin/staff');
     return;
 }
