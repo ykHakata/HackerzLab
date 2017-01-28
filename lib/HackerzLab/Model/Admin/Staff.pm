@@ -159,6 +159,15 @@ sub search_staff_edit {
     return $self;
 }
 
+# 編集実行時の検索一式
+sub search_staff_update {
+    my $self = shift;
+    $self->name( undef );
+    $self->search_staff;
+    $self->staff_row( shift @{ $self->staff_rows } );
+    return $self;
+}
+
 # 新規登録書き込み実行
 sub exec_staff_store {
     my $self = shift;
@@ -221,11 +230,8 @@ sub exec_staff_update {
         email     => $self->req_params->{email},
         modify_ts => now_datetime_to_sqlite(),
     };
-
     $row->update($params);
-
     $txn->commit;
-
     $self->show_id( $self->staff_id );
     return;
 }

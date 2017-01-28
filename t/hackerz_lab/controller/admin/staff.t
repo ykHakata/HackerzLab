@@ -307,6 +307,16 @@ subtest 'update' => sub {
     $row = $t->app->db->teng->single( 'address', +{ id => $address_id } );
     is( $row->name, $post_params->{name}, 'create check address name' );
 
+    # 失敗時
+    $post_params->{name} = '';
+    $t->post_ok( $url => form => $post_params )->status_is(200);
+
+    # 失敗時のメッセージ
+    $words = ['下記のフォームに正しく入力してください'];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
     t::Util::logout_admin($t);
 };
 

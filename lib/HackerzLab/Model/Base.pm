@@ -197,6 +197,33 @@ sub validation_admin_staff_store {
     return $validation;
 }
 
+# 更新登録パラメーターバリデート
+sub validation_admin_staff_update {
+    my $self = shift;
+
+    my $validation = $self->app->validator->validation;
+    $validation->input( $self->req_params );
+
+    $validation->required('id');
+    $validation->required('address_id');
+    $validation->required('name')->size( 1, 100 );
+    $validation->required('rubi')->size( 1, 100 );
+    $validation->required('nickname')->size( 1, 100 );
+    $validation->required('email')->size( 1, 100 );
+
+    $self->validation_set_error_msg(
+        +{  id         => ['管理ユーザーID'],
+            address_id => ['住所ID'],
+            password   => ['ログインパスワード'],
+            name       => ['名前'],
+            rubi       => ['ふりがな'],
+            nickname   => ['表示用ニックネーム'],
+            email      => ['連絡用メールアドレス'],
+        }
+    );
+    return $validation;
+}
+
 1;
 
 __END__

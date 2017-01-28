@@ -121,6 +121,22 @@ sub update {
     my $admin_staff
         = $self->model->admin->staff->create( $self->req->params->to_hash );
 
+    # バリデート
+    $admin_staff->validator_customize('admin_staff_update');
+
+    # 失敗、フィルイン、もう一度入力フォーム表示
+    if ( $admin_staff->validation_has_error ) {
+
+        # エラーメッセージ
+        $self->stash->{validation_msg} = $admin_staff->validation_msg;
+        $admin_staff->search_staff_update;
+        $self->stash->{staff} = $admin_staff->staff_row;
+        my $html = $self->render_to_string( template => 'admin/staff/edit' );
+        my $output = $self->fill_in->fill( \$html, $admin_staff->req_params );
+        $self->render( text => $output );
+        return;
+    }
+
     # DB 書き込み
     $admin_staff->exec_staff_update;
 
