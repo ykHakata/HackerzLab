@@ -303,6 +303,10 @@ subtest 'update' => sub {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
 
+    # DB 登録の確認
+    $row = $t->app->db->teng->single( 'address', +{ id => $address_id } );
+    is( $row->name, $post_params->{name}, 'create check address name' );
+
     t::Util::logout_admin($t);
 };
 

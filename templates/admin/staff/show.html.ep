@@ -56,11 +56,11 @@
           </li>
           <li class="list-group-item ">
             <dt class="">登録日時</dt>
-            <dd class=""><%= $staff->create_ts %>2016-01-08 12:24:12</dd>
+            <dd class=""><%= $staff->create_ts %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">修正日時</dt>
-            <dd class=""><%= $staff->modify_ts %>2016-01-08 12:24:12</dd>
+            <dd class=""><%= $staff->modify_ts %></dd>
           </li>
         </dl>
         <div class="text-center">

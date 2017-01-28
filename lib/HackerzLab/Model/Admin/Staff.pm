@@ -203,6 +203,29 @@ sub exec_staff_store {
 sub exec_staff_update {
     my $self = shift;
 
+    my $teng   = $self->app->db->teng;
+    my $master = $self->app->db->master;
+
+    # 連続して実行できない場合は無効
+    my $txn = $teng->txn_scope;
+
+    # 更新情報取得
+    my $row = $teng->single( 'address',
+        +{ id => $self->req_params->{address_id} } );
+
+    # パラメーター整形
+    my $params = +{
+        name      => $self->req_params->{name},
+        rubi      => $self->req_params->{rubi},
+        nickname  => $self->req_params->{nickname},
+        email     => $self->req_params->{email},
+        modify_ts => now_datetime_to_sqlite(),
+    };
+
+    $row->update($params);
+
+    $txn->commit;
+
     $self->show_id( $self->staff_id );
     return;
 }
