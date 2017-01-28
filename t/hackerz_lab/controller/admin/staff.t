@@ -185,7 +185,6 @@ subtest 'edit' => sub {
 
     #  入力フォームの存在確認
     my $tags = [
-        'input[name=id]',       'input[name=login_id]',
         'input[name=name]',     'input[name=rubi]',
         'input[name=nickname]', 'input[name=email]',
     ];
@@ -214,7 +213,6 @@ subtest 'store' => sub {
     my $url    = '/admin/staff';
     my $params = +{
         login_id  => 'hackerz.matuzou.system@gmail.com',
-        password  => 'matuzou',
         password  => 'matuzou',
         authority => 5,
         name      => '松野 松造',
@@ -266,6 +264,19 @@ subtest 'store' => sub {
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
+
+    t::Util::logout_admin($t);
+};
+
+# POST: /staff/10/update
+# -> ( controller => 'Staff', action => 'update' );
+# 個別編集実行
+subtest 'update' => sub {
+    t::Util::login_admin($t);
+
+    my $staff_id   = 6;
+    my $address_id = 6;
+    my $url = "/admin/staff/$staff_id/update";
 
     t::Util::logout_admin($t);
 };
