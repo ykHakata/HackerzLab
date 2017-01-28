@@ -116,7 +116,17 @@ sub store {
 # 個別編集実行
 sub update {
     my $self = shift;
-    $self->render( text => 'update' );
+
+    # 入力
+    my $admin_staff
+        = $self->model->admin->staff->create( $self->req->params->to_hash );
+
+    # DB 書き込み
+    $admin_staff->exec_staff_update;
+
+    # 書き込み保存終了、修正画面リダイレクト終了
+    $self->flash( flash_msg => '編集登録完了しました' );
+    $self->redirect_to( '/admin/staff/' . $admin_staff->show_id );
     return;
 }
 

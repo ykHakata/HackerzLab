@@ -20,6 +20,7 @@ has [
         staff_row
         pager
         query_staff_id
+        show_id
         edit_form_params
         }
 ];
@@ -146,12 +147,13 @@ sub search_staff_edit {
 
     my $staff_hash   = $self->staff_row->get_columns;
     my $address_hash = $self->staff_row->fetch_address->get_columns;
-    my $params       = +{
-        %{$staff_hash},
-        name     => $address_hash->{name},
-        rubi     => $address_hash->{rubi},
-        nickname => $address_hash->{nickname},
-        email    => $address_hash->{email},
+    my $params = +{
+        id         => $staff_hash->{id},
+        address_id => $address_hash->{id},
+        name       => $address_hash->{name},
+        rubi       => $address_hash->{rubi},
+        nickname   => $address_hash->{nickname},
+        email      => $address_hash->{email},
     };
     $self->edit_form_params($params);
     return $self;
@@ -194,6 +196,14 @@ sub exec_staff_store {
     my $create_ids = $login_staff_row->insert_staff_with_address($params);
 
     $txn->commit;
+    return;
+}
+
+# 編集登録書き込み実行
+sub exec_staff_update {
+    my $self = shift;
+
+    $self->show_id( $self->staff_id );
     return;
 }
 

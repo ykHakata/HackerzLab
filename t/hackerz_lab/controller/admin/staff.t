@@ -187,6 +187,7 @@ subtest 'edit' => sub {
     my $tags = [
         'input[name=name]',     'input[name=rubi]',
         'input[name=nickname]', 'input[name=email]',
+        'form[method=post]',
     ];
     for my $tag ( @{$tags} ) {
         $t->element_exists( $tag, "element check $tag" );
@@ -196,7 +197,7 @@ subtest 'edit' => sub {
     my $words = [
         '編集登録フォーム', 'hackerz.lab.sudo@gmail.com',
         '新命 明',               'しんめい あきら',
-        'アオレンジャー',
+        'アオレンジャー',    '/admin/staff/2/update',
     ];
 
     for my $word ( @{$words} ) {
@@ -276,7 +277,31 @@ subtest 'update' => sub {
 
     my $staff_id   = 6;
     my $address_id = 6;
-    my $url = "/admin/staff/$staff_id/update";
+    my $url        = "/admin/staff/$staff_id/update";
+
+    # 変更元のデーター取得
+    my $row = $t->app->db->teng->single( 'address', +{ id => $address_id } );
+
+    my $post_params = +{
+        id         => $staff_id,
+        address_id => $address_id,
+        name       => '名前変更',
+        rubi       => $row->rubi,
+        nickname   => $row->nickname,
+        email      => $row->email,
+    };
+
+    # 成功時、詳細画面にリダイレクト
+    $t->post_ok( $url => form => $post_params )->status_is(302);
+    $t->header_is( location => "/admin/staff/$staff_id" );
+    my $location_url = $t->tx->res->headers->location;
+    $t->get_ok($location_url)->status_is(200);
+
+    # 登録完了のメッセージ
+    my $words = ['編集登録完了しました'];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
 
     t::Util::logout_admin($t);
 };
