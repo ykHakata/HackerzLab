@@ -269,8 +269,6 @@ subtest 'store' => sub {
     t::Util::logout_admin($t);
 };
 
-# POST: /staff/10/update
-# -> ( controller => 'Staff', action => 'update' );
 # 個別編集実行
 subtest 'update' => sub {
     t::Util::login_admin($t);

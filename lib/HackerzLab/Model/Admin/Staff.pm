@@ -20,6 +20,7 @@ has [
         staff_row
         pager
         query_staff_id
+        query_name
         show_id
         edit_form_params
         }
@@ -58,6 +59,16 @@ sub search_staff_index {
     return $self;
 }
 
+sub search_staff_search {
+    my $self = shift;
+
+    # 検索条件
+    $self->query_staff_id( $self->staff_id );
+    $self->query_name( $self->name );
+    $self->search_staff;
+    return $self;
+}
+
 # 入力条件による検索
 sub search_staff {
     my $self   = shift;
@@ -66,7 +77,7 @@ sub search_staff {
 
     # パラメータ無き場合
     return $self->search_staff_index
-        if !$self->staff_id && !$self->name;
+        if !$self->query_staff_id && !$self->query_name;
 
     # sql maker にしろ 生 sql にしろ、
     # 検索条件を組み替えるのは厄介
@@ -75,11 +86,8 @@ sub search_staff {
     # name がある場合は address
     # テーブルから検索 id を作り込み
 
-    # 検索用の id セット
-    $self->query_staff_id( $self->staff_id );
-
     # 名前検索が存在する場合
-    if ( $self->name ) {
+    if ( $self->query_name ) {
         return $self if !$self->with_query_address_name();
     }
 
@@ -103,7 +111,7 @@ sub with_query_address_name {
     my $teng = $self->app->db->teng;
 
     # 検索条件整理
-    my $name = $self->name;
+    my $name = $self->query_name;
 
     # like 検索用の値を作成
     my $like = '%' . $name . '%';
@@ -134,6 +142,10 @@ sub with_query_address_name {
 # 詳細画面向け検索
 sub search_staff_show {
     my $self = shift;
+
+    # 検索条件
+    $self->query_staff_id( $self->staff_id );
+    $self->query_name(undef);
     $self->search_staff;
     $self->staff_row( shift @{ $self->staff_rows } );
     return $self;
@@ -142,12 +154,16 @@ sub search_staff_show {
 # 編集画面向け検索一式
 sub search_staff_edit {
     my $self = shift;
+
+    # 検索条件
+    $self->query_staff_id( $self->staff_id );
+    $self->query_name(undef);
     $self->search_staff;
     $self->staff_row( shift @{ $self->staff_rows } );
 
     my $staff_hash   = $self->staff_row->get_columns;
     my $address_hash = $self->staff_row->fetch_address->get_columns;
-    my $params = +{
+    my $params       = +{
         id         => $staff_hash->{id},
         address_id => $address_hash->{id},
         name       => $address_hash->{name},
@@ -162,7 +178,10 @@ sub search_staff_edit {
 # 編集実行時の検索一式
 sub search_staff_update {
     my $self = shift;
-    $self->name( undef );
+
+    # 検索条件
+    $self->query_staff_id( $self->staff_id );
+    $self->query_name(undef);
     $self->search_staff;
     $self->staff_row( shift @{ $self->staff_rows } );
     return $self;

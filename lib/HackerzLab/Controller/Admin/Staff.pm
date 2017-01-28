@@ -29,7 +29,7 @@ sub search {
         = $self->model->admin->staff->create( $self->req->params->to_hash );
 
     # 入力条件による検索
-    $admin_staff->search_staff;
+    $admin_staff->search_staff_search;
 
     # 検索結果の値一式 (staff, ページ の情報)
     $self->stash->{staffs} = $admin_staff->staff_rows;
