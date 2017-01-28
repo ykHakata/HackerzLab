@@ -14,6 +14,8 @@ HackerzLab::Model::Admin::Staff - コントローラーモデル (管理機能/�
 has [
     qw{
         page
+        staff_id
+        name
         staff_rows
         staff_row
         pager
@@ -33,7 +35,10 @@ sub create {
     my $self   = shift;
     my $params = shift;
     $self->req_params($params);
-    $self->page( $self->req_params->{page} || 1 );
+
+    $self->staff_id( $params->{id} );
+    $self->name( $params->{name} );
+    $self->page( $params->{page} || 1 );
     return $self;
 }
 
@@ -60,7 +65,7 @@ sub search_staff {
 
     # パラメータ無き場合
     return $self->search_staff_index
-        if !$self->req_params->{id} && !$self->req_params->{name};
+        if !$self->staff_id && !$self->name;
 
     # sql maker にしろ 生 sql にしろ、
     # 検索条件を組み替えるのは厄介
@@ -70,10 +75,10 @@ sub search_staff {
     # テーブルから検索 id を作り込み
 
     # 検索用の id セット
-    $self->query_staff_id( $self->req_params->{id} );
+    $self->query_staff_id( $self->staff_id );
 
     # 名前検索が存在する場合
-    if ( $self->req_params->{name} ) {
+    if ( $self->name ) {
         return $self if !$self->with_query_address_name();
     }
 
@@ -97,7 +102,7 @@ sub with_query_address_name {
     my $teng = $self->app->db->teng;
 
     # 検索条件整理
-    my $name = $self->req_params->{name};
+    my $name = $self->name;
 
     # like 検索用の値を作成
     my $like = '%' . $name . '%';
