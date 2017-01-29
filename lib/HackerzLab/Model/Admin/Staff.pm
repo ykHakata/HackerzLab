@@ -61,19 +61,30 @@ sub search_staff_index {
 
 sub search_staff_search {
     my $self = shift;
-
-    # 検索条件
-    $self->query_staff_id( $self->staff_id );
-    $self->query_name( $self->name );
-    $self->search_staff;
+    my $cond = +{
+        query_staff_id => $self->staff_id,
+        query_name     => $self->name,
+    };
+    $self->search_staff($cond);
     return $self;
 }
 
 # 入力条件による検索
+# $self->search_staff(\%search_condition);
+# 例
+# my $cond = +{
+#     query_staff_id => $self->staff_id,
+#     query_name     => $self->name,
+# };
+# my $rows = $self->search_staff($cond)->staff_rows;
 sub search_staff {
     my $self   = shift;
+    my $cond   = shift;
     my $teng   = $self->app->db->teng;
     my $master = $self->app->db->master;
+
+    $self->query_staff_id( $cond->{query_staff_id} );
+    $self->query_name( $cond->{query_name} );
 
     # パラメータ無き場合
     return $self->search_staff_index
@@ -142,11 +153,8 @@ sub with_query_address_name {
 # 詳細画面向け検索
 sub search_staff_show {
     my $self = shift;
-
-    # 検索条件
-    $self->query_staff_id( $self->staff_id );
-    $self->query_name(undef);
-    $self->search_staff;
+    my $cond = +{ query_staff_id => $self->staff_id, };
+    $self->search_staff($cond);
     $self->staff_row( shift @{ $self->staff_rows } );
     return $self;
 }
@@ -155,10 +163,8 @@ sub search_staff_show {
 sub search_staff_edit {
     my $self = shift;
 
-    # 検索条件
-    $self->query_staff_id( $self->staff_id );
-    $self->query_name(undef);
-    $self->search_staff;
+    my $cond = +{ query_staff_id => $self->staff_id, };
+    $self->search_staff($cond);
     $self->staff_row( shift @{ $self->staff_rows } );
 
     my $staff_hash   = $self->staff_row->get_columns;
@@ -178,11 +184,8 @@ sub search_staff_edit {
 # 編集実行時の検索一式
 sub search_staff_update {
     my $self = shift;
-
-    # 検索条件
-    $self->query_staff_id( $self->staff_id );
-    $self->query_name(undef);
-    $self->search_staff;
+    my $cond = +{ query_staff_id => $self->staff_id, };
+    $self->search_staff($cond);
     $self->staff_row( shift @{ $self->staff_rows } );
     return $self;
 }
