@@ -78,13 +78,13 @@ sub search_staff_search {
 # };
 # my $rows = $self->search_staff($cond)->staff_rows;
 sub search_staff {
-    my $self   = shift;
-    my $cond   = shift;
-    my $teng   = $self->app->db->teng;
-    my $master = $self->app->db->master;
+    my $self        = shift;
+    my $search_cond = shift;
+    my $teng        = $self->app->db->teng;
+    my $master      = $self->app->db->master;
 
-    $self->query_staff_id( $cond->{query_staff_id} );
-    $self->query_name( $cond->{query_name} );
+    $self->query_staff_id( $search_cond->{query_staff_id} );
+    $self->query_name( $search_cond->{query_name} );
 
     # パラメータ無き場合
     return $self->search_staff_index
