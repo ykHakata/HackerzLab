@@ -56,6 +56,13 @@ sub show {
     my $params      = +{ id => $self->stash->{id}, };
     my $admin_staff = $self->model->admin->staff->create($params);
     $self->stash->{staff} = $admin_staff->search_staff_show->staff_row;
+
+    # 存在しないユーザー
+    if ( !$self->stash->{staff} ) {
+        $self->flash( flash_msg => '存在しないユーザー' );
+        $self->redirect_to('/admin/staff');
+        return;
+    }
     $self->render( template => 'admin/staff/show' );
     return;
 }
@@ -67,6 +74,13 @@ sub edit {
     my $admin_staff = $self->model->admin->staff->create($params);
     $admin_staff->search_staff_edit;
     $self->stash->{staff} = $admin_staff->staff_row;
+
+    # 存在しないユーザー
+    if ( !$self->stash->{staff} ) {
+        $self->flash( flash_msg => '存在しないユーザー' );
+        $self->redirect_to('/admin/staff');
+        return;
+    }
 
     # フィルイン
     my $html = $self->render_to_string( template => 'admin/staff/edit' );
@@ -148,8 +162,16 @@ sub update {
 
 # 個別削除実行
 sub remove {
-    my $self = shift;
-    $self->render( text => 'remove' );
+    my $self        = shift;
+    my $params      = +{ id => $self->stash->{id}, };
+    my $admin_staff = $self->model->admin->staff->create($params);
+
+    # 削除実行
+    $admin_staff->exec_staff_remove;
+
+    # 完了後リダイレクト終了
+    $self->flash( flash_msg => '削除完了しました' );
+    $self->redirect_to('/admin/staff');
     return;
 }
 

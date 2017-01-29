@@ -51,6 +51,23 @@ sub insert_staff_with_address {
     return $create_ids;
 }
 
+sub soft_delete {
+    my $self = shift;
+
+    my $master      = HackerzLab::DB::Master->new();
+    my $NOT_DELETED = $master->label('NOT_DELETED')->deleted->constant;
+    my $DELETED     = $master->label('DELETED')->deleted->constant;
+
+    # 関連するテーブルも削除
+    $self->update( +{ deleted => $DELETED } );
+    my @address_rows
+        = $self->handle->search( 'address', +{ staff_id => $self->id, } );
+    for my $row (@address_rows) {
+        $row->update( +{ deleted => $DELETED } );
+    }
+    return;
+}
+
 1;
 
 __END__

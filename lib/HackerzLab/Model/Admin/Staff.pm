@@ -166,6 +166,7 @@ sub search_staff_edit {
     my $cond = +{ query_staff_id => $self->staff_id, };
     $self->search_staff($cond);
     $self->staff_row( shift @{ $self->staff_rows } );
+    return $self if !$self->staff_row;
 
     my $staff_hash   = $self->staff_row->get_columns;
     my $address_hash = $self->staff_row->fetch_address->get_columns;
@@ -242,19 +243,37 @@ sub exec_staff_update {
 
     # 更新情報取得
     my $row = $teng->single( 'address',
-        +{ id => $self->req_params->{address_id} } );
+        +{ id => $self->req_params_passed->{address_id} } );
 
     # パラメーター整形
     my $params = +{
-        name      => $self->req_params->{name},
-        rubi      => $self->req_params->{rubi},
-        nickname  => $self->req_params->{nickname},
-        email     => $self->req_params->{email},
+        name      => $self->req_params_passed->{name},
+        rubi      => $self->req_params_passed->{rubi},
+        nickname  => $self->req_params_passed->{nickname},
+        email     => $self->req_params_passed->{email},
         modify_ts => now_datetime_to_sqlite(),
     };
     $row->update($params);
     $txn->commit;
     $self->show_id( $self->staff_id );
+    return;
+}
+
+# 削除実行
+sub exec_staff_remove {
+    my $self = shift;
+    my $teng = $self->app->db->teng;
+
+    # 連続して実行できない場合は無効
+    my $txn = $teng->txn_scope;
+
+    # 削除情報取得
+    my $staff_row = $teng->single( 'staff', +{ id => $self->staff_id } );
+
+    # 削除フラグ
+    $staff_row->soft_delete;
+
+    $txn->commit;
     return;
 }
 

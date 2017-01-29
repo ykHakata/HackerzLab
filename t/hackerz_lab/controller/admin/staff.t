@@ -318,6 +318,63 @@ subtest 'update' => sub {
     t::Util::logout_admin($t);
 };
 
+# 個別削除実行
+subtest 'remove' => sub {
+    t::Util::login_admin($t);
+
+    my $staff_id   = 10;
+    my $address_id = 10;
+    my $url        = "/admin/staff/$staff_id/remove";
+
+    my $master      = $t->app->db->master;
+    my $NOT_DELETED = $master->label('NOT_DELETED')->deleted->constant;
+    my $DELETED     = $master->label('DELETED')->deleted->constant;
+
+    # 削除前のデーター確認
+    my $staff_row
+        = $t->app->db->teng->single( 'staff', +{ id => $staff_id } );
+
+    my $address_row
+        = $t->app->db->teng->single( 'address', +{ id => $address_id } );
+
+    is( $staff_row->deleted,   $NOT_DELETED, 'deleted check' );
+    is( $address_row->deleted, $NOT_DELETED, 'deleted check' );
+
+    # 削除を実行、一覧画面にリダイレクト
+    $t->post_ok($url)->status_is(302);
+    $t->header_is( location => '/admin/staff' );
+    my $location_url = $t->tx->res->headers->location;
+    $t->get_ok($location_url)->status_is(200);
+
+    # 完了のメッセージ
+    my $words = ['削除完了しました'];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    # 削除フラグが更新している確認
+    $staff_row = $t->app->db->teng->single( 'staff', +{ id => $staff_id } );
+    $address_row
+        = $t->app->db->teng->single( 'address', +{ id => $address_id } );
+
+    is( $staff_row->deleted,   $DELETED, 'deleted check' );
+    is( $address_row->deleted, $DELETED, 'deleted check' );
+
+    # 削除フラグが有効になっているデータは表示できない
+    $t->get_ok("/admin/staff/$staff_id")->status_is(302);
+    $t->header_is( location => '/admin/staff' );
+    $location_url = $t->tx->res->headers->location;
+    $t->get_ok($location_url)->status_is(200);
+
+    # メッセージ
+    $words = ['存在しないユーザー'];
+    for my $word ( @{$words} ) {
+        $t->content_like( qr{\Q$word\E}, 'content check' );
+    }
+
+    t::Util::logout_admin($t);
+};
+
 done_testing();
 
 __END__
