@@ -84,8 +84,10 @@ sub startup {
     my $r = $self->routes;
 
     # 告知用サイト(暫定) http://hackerzlab.com/
-    $r->get('/')->to('info#index');
-    $r->get('/index')->to('info#index');
+    # $r->get('/')->to('info#index');
+    # $r->get('/index')->to('info#index');
+    $r->get('/')->to('info#menu');
+    $r->get('/index')->to('info#menu');
     $r->get('/info')->to('info#menu');
 
     # 公開ファイルの目次

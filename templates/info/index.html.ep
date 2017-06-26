@@ -6,13 +6,23 @@
   </div>
   <!-- 告知サイト -->
   <div class="list-group">
-    <a href="/" class="list-group-item">
-      <h4 class="list-group-item-heading">告知サイト</h4>
+    <div class="list-group-item">
+      <h4 class="list-group-item-heading">関連情報</h4>
       <p class="list-group-item-text">
-        <br>告知サイト
-        <br>http://hackerzlab.com 当面今の告知サイトにリダイレクト予定
+      <dl class="dl-horizontal">
+        <dt>facebook</dt>
+        <dd><a href="https://www.facebook.com/HackerzLab.HKT/" target="_blank">https://www.facebook.com/HackerzLab.HKT/</a></dd>
+        <dt>twitter</dt>
+        <dd><a href="https://twitter.com/hackerz_hkt" target="_blank">https://twitter.com/hackerz_hkt</a></dd>
+        <dt>ブログ</dt>
+        <dd><a href="http://hackerz.sakura.ne.jp/wp/" target="_blank">http://hackerz.sakura.ne.jp/wp/</a></dd>
+        <dt>connpass</dt>
+        <dd><a href="https://hackerzlabhkt.connpass.com/" target="_blank">https://hackerzlabhkt.connpass.com/</a></dd>
+        <dt>トレーニングサイト</dt>
+        <dd><a href="http://www13429ui.sakura.ne.jp/" target="_blank">http://www13429ui.sakura.ne.jp/</a></dd>
+      </dl>
       </p>
-    </a>
+    </div>
   </div>
   <!-- 公開ファイルの目次 -->
   <div class="list-group">
@@ -26,11 +36,11 @@
   </div>
   <!-- トレーニングサイト -->
   <div class="list-group">
-    <a href="/training" class="list-group-item">
+    <a href="http://www13429ui.sakura.ne.jp/" target="_blank" class="list-group-item">
       <h4 class="list-group-item-heading">トレーニングサイト</h4>
       <p class="list-group-item-text">
         <br>トレーニングサイト
-        <br>http://hackerzlab.com/training
+        <br>http://www13429ui.sakura.ne.jp/
       </p>
     </a>
   </div>
