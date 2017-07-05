@@ -21,15 +21,14 @@ subtest 'router' => sub {
 # テンプレート描画
 subtest 'template' => sub {
 
-    # \Q \E は文字として認識してくださいという意味
     $t->get_ok('/')->status_is(200);
-    $t->content_like( qr{\QHackerz Lab\E}, );
+    $t->text_is('h1', 'Welcome to the HackerzLab');
 
     $t->get_ok('/index')->status_is(200);
-    $t->content_like( qr{\QHackerz Lab\E}, );
+    $t->text_is('h1', 'Welcome to the HackerzLab');
 
     $t->get_ok('/info')->status_is(200);
-    $t->content_like( qr{\QWelcome to the HackerzLab\E}, );
+    $t->text_is('h1', 'Welcome to the HackerzLab');
 };
 
 done_testing();
