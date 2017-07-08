@@ -1,6 +1,7 @@
 package HackerzLab::Model::Admin;
 use Mojo::Base 'HackerzLab::Model::Base';
-use Mojo::Loader qw{find_modules load_class};
+use HackerzLab::Model::Admin::Auth;
+use HackerzLab::Model::Admin::Staff;
 
 =encoding utf8
 
@@ -10,15 +11,13 @@ HackerzLab::Model::Admin - コントローラーモデル (管理機能/呼び�
 
 =cut
 
-for my $module ( find_modules __PACKAGE__ ) {
-    my $e = load_class $module;
-    warn qq{Loading "$module" failed: $e} and next if ref $e;
-    my @names = split '::', $module;
-    my $method = lc pop @names;
-    has $method => sub {
-        $module->new( +{ app => shift->app } );
-    };
-}
+has auth => sub {
+    HackerzLab::Model::Admin::Auth->new( +{ conf => shift->conf } );
+};
+
+has staff => sub {
+    HackerzLab::Model::Admin::Staff->new( +{ conf => shift->conf } );
+};
 
 # 呼び出しテスト
 sub welcome {

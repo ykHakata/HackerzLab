@@ -1,6 +1,8 @@
 package HackerzLab::Model::Base;
 use Mojo::Base -base;
 use Mojo::Util qw{dumper};
+use HackerzLab::DB;
+use Mojolicious::Validator;
 
 =encoding utf8
 
@@ -12,7 +14,7 @@ HackerzLab::Model::Base - コントローラーモデル (共通)
 
 has [
     qw{
-        app
+        conf
         req_params
         req_params_passed
         validation_has_error
@@ -22,6 +24,10 @@ has [
         validation_login_staff
         }
 ];
+
+has db => sub {
+    HackerzLab::DB->new( +{ conf => shift->conf } );
+};
 
 # 呼び出しテスト
 sub welcome {
@@ -67,46 +73,17 @@ sub validator_customize {
     return $self;
 }
 
-# login_id 二重登録防止
-sub validation_not_exists_login_id {
-    my $self      = shift;
-    my $validator = $self->app->validator;
-    $validator->add_check(
-        not_exists_login_id => sub {
-            my ( $validation, $name, $login_id, ) = @_;
-            my $NOT_DELETED
-                = $self->app->db->master->label('NOT_DELETED')
-                ->deleted->constant;
-            my $row = $self->app->db->teng->single( 'staff',
-                +{ login_id => $login_id, deleted => $NOT_DELETED, } );
-            return 1 if $row;
-            return;
-        }
-    );
-    my $validation = $validator->validation;
-    $validation->input( $self->req_params );
-    my $value = $validation->param('login_id');
-    $validation->required('login_id')->not_exists_login_id($value);
-    $self->validation_set_error_msg(
-        +{  login_id => [
-                '入力されたログインID(email)はすでに登録済みです'
-            ],
-        }
-    );
-    return $validation;
-}
-
 # DB 存在確認
 sub validation_exists_login_id {
     my $self      = shift;
-    my $validator = $self->app->validator;
+    my $validator = Mojolicious::Validator->new;
     $validator->add_check(
         exists_login_id => sub {
             my ( $validation, $name, $login_id, ) = @_;
             my $NOT_DELETED
-                = $self->app->db->master->label('NOT_DELETED')
+                = $self->db->master->label('NOT_DELETED')
                 ->deleted->constant;
-            my $row = $self->app->db->teng->single( 'staff',
+            my $row = $self->db->teng->single( 'staff',
                 +{ login_id => $login_id, deleted => $NOT_DELETED, } );
             $self->validation_login_staff($row);
             return 1 if !$row;
@@ -124,10 +101,8 @@ sub validation_exists_login_id {
 
 # password 照合
 sub validation_check_password {
-    my $self = shift;
-
-    my $validator = $self->app->validator;
-
+    my $self      = shift;
+    my $validator = Mojolicious::Validator->new;
     $validator->add_check(
         check_password => sub {
 
@@ -153,9 +128,10 @@ sub validation_check_password {
 
 # 新規登録パラメーターバリデート
 sub validation_admin_auth_login {
-    my $self = shift;
+    my $self       = shift;
+    my $validator  = Mojolicious::Validator->new;
+    my $validation = $validator->validation;
 
-    my $validation = $self->app->validator->validation;
     $validation->input( $self->req_params );
 
     $validation->required('login_id')->size( 1, 100 );
@@ -171,9 +147,10 @@ sub validation_admin_auth_login {
 
 # 新規登録パラメーターバリデート
 sub validation_admin_staff_store {
-    my $self = shift;
+    my $self       = shift;
+    my $validator  = Mojolicious::Validator->new;
+    my $validation = $validator->validation;
 
-    my $validation = $self->app->validator->validation;
     $validation->input( $self->req_params );
 
     $validation->required('login_id')->size( 1, 100 );
@@ -194,14 +171,39 @@ sub validation_admin_staff_store {
             email     => ['連絡用メールアドレス'],
         }
     );
+    return $validation if $validation->has_error;
+
+    # login_id 二重登録防止
+    $validator->add_check(
+        not_exists_login_id => sub {
+            my ( $validation, $name, $login_id, ) = @_;
+            my $NOT_DELETED
+                = $self->db->master->label('NOT_DELETED')
+                ->deleted->constant;
+            my $row = $self->db->teng->single( 'staff',
+                +{ login_id => $login_id, deleted => $NOT_DELETED, } );
+            return 1 if $row;
+            return;
+        }
+    );
+
+    my $value = $validation->param('login_id');
+    $validation->required('login_id')->not_exists_login_id($value);
+    $self->validation_set_error_msg(
+        +{  login_id => [
+                '入力されたログインID(email)はすでに登録済みです'
+            ],
+        }
+    );
     return $validation;
 }
 
 # 更新登録パラメーターバリデート
 sub validation_admin_staff_update {
-    my $self = shift;
+    my $self       = shift;
+    my $validator  = Mojolicious::Validator->new;
+    my $validation = $validator->validation;
 
-    my $validation = $self->app->validator->validation;
     $validation->input( $self->req_params );
 
     $validation->required('id');

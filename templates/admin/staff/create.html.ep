@@ -49,8 +49,8 @@
             <label for="inputAuthority" class="col-sm-2 control-label">管理者権限</label>
             <div class="col-sm-10">
               <select class="form-control" name="authority" id="inputAuthority">
-              % for my $id (@{db->master->authority->to_ids}) {
-                <option value="<%= $id %>"><%= db->master->id($id)->authority->get_name; %></option>
+              % for my $authority (@{$authorities}) {
+                <option value="<%= $authority->{id} %>"><%= $authority->{name} %></option>
               % }
               </select>
             </div>

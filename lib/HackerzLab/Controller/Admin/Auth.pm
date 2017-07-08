@@ -1,5 +1,5 @@
 package HackerzLab::Controller::Admin::Auth;
-use Mojo::Base 'Mojolicious::Controller';
+use Mojo::Base 'HackerzLab::Controller';
 use Mojo::Util qw{dumper};
 
 # This action will render a template
@@ -34,9 +34,7 @@ sub login {
 
         # エラーメッセージ
         $self->stash->{validation_msg} = $admin_auth->validation_msg;
-        my $html = $self->render_to_string( template => 'admin/login' );
-        my $output = $self->fill_in->fill( \$html, $admin_auth->req_params );
-        $self->render( text => $output );
+        $self->render_fillin('admin/login', $admin_auth->req_params);
         return;
     }
 

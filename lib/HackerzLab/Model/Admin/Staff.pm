@@ -23,6 +23,7 @@ has [
         query_name
         show_id
         edit_form_params
+        login_staff
         }
 ];
 
@@ -47,8 +48,8 @@ sub create {
 # 一覧画面初期表示用 staff 情報
 sub search_staff_index {
     my $self   = shift;
-    my $teng   = $self->app->db->teng;
-    my $master = $self->app->db->master;
+    my $teng   = $self->db->teng;
+    my $master = $self->db->master;
     my ( $rows, $pager ) = $teng->search_with_pager(
         'staff',
         +{ deleted => $master->label('NOT_DELETED')->deleted->constant },
@@ -80,8 +81,8 @@ sub search_staff_search {
 sub search_staff {
     my $self        = shift;
     my $search_cond = shift;
-    my $teng        = $self->app->db->teng;
-    my $master      = $self->app->db->master;
+    my $teng        = $self->db->teng;
+    my $master      = $self->db->master;
 
     $self->query_staff_id( $search_cond->{query_staff_id} );
     $self->query_name( $search_cond->{query_name} );
@@ -119,7 +120,7 @@ sub search_staff {
 # 名前による条件検索
 sub with_query_address_name {
     my $self = shift;
-    my $teng = $self->app->db->teng;
+    my $teng = $self->db->teng;
 
     # 検索条件整理
     my $name = $self->query_name;
@@ -195,14 +196,14 @@ sub search_staff_update {
 sub exec_staff_store {
     my $self = shift;
 
-    my $teng   = $self->app->db->teng;
-    my $master = $self->app->db->master;
+    my $teng   = $self->db->teng;
+    my $master = $self->db->master;
 
     # 連続して実行できない場合は無効
     my $txn = $teng->txn_scope;
 
     # ログイン情報取得
-    my $login_staff_row = $self->app->login_staff;
+    my $login_staff_row = $self->login_staff;
 
     # パラメーター整形
     my $params = +{
@@ -235,8 +236,8 @@ sub exec_staff_store {
 sub exec_staff_update {
     my $self = shift;
 
-    my $teng   = $self->app->db->teng;
-    my $master = $self->app->db->master;
+    my $teng   = $self->db->teng;
+    my $master = $self->db->master;
 
     # 連続して実行できない場合は無効
     my $txn = $teng->txn_scope;
@@ -262,7 +263,7 @@ sub exec_staff_update {
 # 削除実行
 sub exec_staff_remove {
     my $self = shift;
-    my $teng = $self->app->db->teng;
+    my $teng = $self->db->teng;
 
     # 連続して実行できない場合は無効
     my $txn = $teng->txn_scope;
@@ -275,6 +276,13 @@ sub exec_staff_remove {
 
     $txn->commit;
     return;
+}
+
+sub authorities {
+    my $self = shift;
+    my $master = $self->db->master;
+    my $authorities = $master->authority->sort_to_hash;
+    return $authorities;
 }
 
 1;

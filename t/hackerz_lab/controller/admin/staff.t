@@ -211,6 +211,10 @@ subtest 'edit' => sub {
 subtest 'store' => sub {
     t::Util::login_admin($t);
 
+    my $master      = $t->app->test_db->master;
+    my $NOT_DELETED = $master->label('NOT_DELETED')->deleted->constant;
+    my $DELETED     = $master->label('DELETED')->deleted->constant;
+
     my $url    = '/admin/staff';
     my $params = +{
         login_id  => 'hackerz.matuzou.system@gmail.com',
@@ -234,14 +238,26 @@ subtest 'store' => sub {
     }
 
     # DB 登録の確認
-    my $staff_row = $t->app->db->teng->single( 'staff',
+    my $staff_row = $t->app->test_db->teng->single( 'staff',
         +{ login_id => $params->{login_id} } );
 
-    my $address_row = $t->app->db->teng->single( 'address',
+    my $address_row = $t->app->test_db->teng->single( 'address',
         +{ staff_id => $staff_row->id } );
 
     ok( $staff_row,   'create check staff row' );
     ok( $address_row, 'create check address row' );
+
+    is( $staff_row->login_id,  $params->{login_id},  'login_id' );
+    is( $staff_row->password,  $params->{password},  'password' );
+    is( $staff_row->authority, $params->{authority}, 'authority' );
+    is( $staff_row->deleted,   $NOT_DELETED,         'deleted' );
+
+    is( $address_row->staff_id, $staff_row->id,      'staff_id' );
+    is( $address_row->name,     $params->{name},     'name' );
+    is( $address_row->rubi,     $params->{rubi},     'rubi' );
+    is( $address_row->nickname, $params->{nickname}, 'nickname' );
+    is( $address_row->email,    $params->{email},    'email' );
+    is( $address_row->deleted,  $NOT_DELETED,        'deleted' );
 
     # 失敗時
     $params->{login_id} = '';
@@ -278,7 +294,7 @@ subtest 'update' => sub {
     my $url        = "/admin/staff/$staff_id/update";
 
     # 変更元のデーター取得
-    my $row = $t->app->db->teng->single( 'address', +{ id => $address_id } );
+    my $row = $t->app->test_db->teng->single( 'address', +{ id => $address_id } );
 
     my $post_params = +{
         id         => $staff_id,
@@ -302,7 +318,7 @@ subtest 'update' => sub {
     }
 
     # DB 登録の確認
-    $row = $t->app->db->teng->single( 'address', +{ id => $address_id } );
+    $row = $t->app->test_db->teng->single( 'address', +{ id => $address_id } );
     is( $row->name, $post_params->{name}, 'create check address name' );
 
     # 失敗時
@@ -326,16 +342,16 @@ subtest 'remove' => sub {
     my $address_id = 10;
     my $url        = "/admin/staff/$staff_id/remove";
 
-    my $master      = $t->app->db->master;
+    my $master      = $t->app->test_db->master;
     my $NOT_DELETED = $master->label('NOT_DELETED')->deleted->constant;
     my $DELETED     = $master->label('DELETED')->deleted->constant;
 
     # 削除前のデーター確認
     my $staff_row
-        = $t->app->db->teng->single( 'staff', +{ id => $staff_id } );
+        = $t->app->test_db->teng->single( 'staff', +{ id => $staff_id } );
 
     my $address_row
-        = $t->app->db->teng->single( 'address', +{ id => $address_id } );
+        = $t->app->test_db->teng->single( 'address', +{ id => $address_id } );
 
     is( $staff_row->deleted,   $NOT_DELETED, 'deleted check' );
     is( $address_row->deleted, $NOT_DELETED, 'deleted check' );
@@ -353,9 +369,9 @@ subtest 'remove' => sub {
     }
 
     # 削除フラグが更新している確認
-    $staff_row = $t->app->db->teng->single( 'staff', +{ id => $staff_id } );
+    $staff_row = $t->app->test_db->teng->single( 'staff', +{ id => $staff_id } );
     $address_row
-        = $t->app->db->teng->single( 'address', +{ id => $address_id } );
+        = $t->app->test_db->teng->single( 'address', +{ id => $address_id } );
 
     is( $staff_row->deleted,   $DELETED, 'deleted check' );
     is( $address_row->deleted, $DELETED, 'deleted check' );

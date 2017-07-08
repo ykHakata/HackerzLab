@@ -1,8 +1,6 @@
 package HackerzLab;
 use Mojo::Base 'Mojolicious';
-use HackerzLab::DB;
 use HackerzLab::Model;
-use HTML::FillInForm::Lite;
 
 =encoding utf8
 
@@ -29,22 +27,11 @@ sub startup {
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
 
-    # データーベース
-    $self->helper(
-        db => sub {
-            state $db = HackerzLab::DB->new( +{ app => $self->app } );
-        }
-    );
-
     # コントローラーモデル
     $self->helper(
-        model => sub {
-            state $model = HackerzLab::Model->new( +{ app => $self->app } );
-        }
+        model =>
+            sub { HackerzLab::Model->new( +{ conf => shift->app->config } ); }
     );
-
-    # フィルインフォーム (入力フォームへの埋め込み)
-    $self->helper( fill_in => sub { my $fill_in = HTML::FillInForm::Lite->new(); } );
 
     # コマンドをロードするための他の名前空間
     push @{ $self->commands->namespaces }, 'HackerzLab::Command';

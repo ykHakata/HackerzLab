@@ -3,6 +3,7 @@ use Mojo::Base -strict;
 use Test::More;
 use Test::Mojo;
 use Mojo::Util qw{dumper};
+use HackerzLab::DB;
 
 =encoding utf8
 
@@ -24,6 +25,9 @@ sub init {
 
     # テスト用DB初期化
     $t->app->commands->run('generate_db');
+    $t->app->helper(
+        test_db => sub { HackerzLab::DB->new( +{ conf => $t->app->config } ) }
+    );
     return $t;
 }
 
@@ -32,7 +36,7 @@ sub login_admin {
     my $t = shift;
 
     # テスト用の staff データの存在確認
-    my $row = $t->app->db->teng->single( 'staff', +{ id => 1 } );
+    my $row = $t->app->test_db->teng->single( 'staff', +{ id => 1 } );
     ok($row);
 
     my $params = +{

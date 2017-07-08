@@ -12,7 +12,7 @@ HackerzLab::DB::Base - データベースオブジェクト (共通)
 
 =cut
 
-has [qw{app}];
+has [qw{conf}];
 
 # 呼び出しテスト
 sub welcome {
@@ -22,7 +22,7 @@ sub welcome {
 
 sub teng {
     my $self = shift;
-    my $conf = $self->app->config->{db};
+    my $conf = $self->conf->{db};
 
     my $dsn_str = $conf->{dsn_str};
     my $user    = $conf->{user};

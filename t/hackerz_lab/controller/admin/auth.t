@@ -53,7 +53,7 @@ subtest 'login logout display' => sub {
 subtest 'auth check' => sub {
 
     # テスト用の staff データの存在確認
-    my $row = $t->app->db->teng->single( 'staff', +{ id => 1 } );
+    my $row = $t->app->test_db->teng->single( 'staff', +{ id => 1 } );
     ok($row);
 
     # ログインへのアクセス
@@ -149,7 +149,7 @@ subtest 'session site' => sub {
     # ログイン状態でアクセス
 
     # テスト用の staff データの存在確認
-    my $row = $t->app->db->teng->single( 'staff', +{ id => 1 } );
+    my $row = $t->app->test_db->teng->single( 'staff', +{ id => 1 } );
     ok($row);
 
     # ログインへのアクセス

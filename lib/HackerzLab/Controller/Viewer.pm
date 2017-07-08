@@ -16,7 +16,7 @@ sub index {
     my $model_viewer = $self->model->viewer;
 
     # 1: ['...','...', ...] フルパスの文字列
-    $model_viewer->create_public_files;
+    $model_viewer->public_files( $self->app->home->list_files('public') );
 
     # 2: データ構造に
     $model_viewer->parse_public_files;

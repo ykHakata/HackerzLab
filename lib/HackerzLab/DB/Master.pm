@@ -37,6 +37,16 @@ HackerzLab::DB::Master - マスターデータオブジェクト
     # };
     my $authority_hash_ref = $master->authority->to_hash;
 
+    # [
+    #     +{ id => 0, name => '権限なし', },
+    #     +{ id => 1, name => 'root', },
+    #     +{ id => 2, name => 'sudo', },
+    #     +{ id => 3, name => 'admin', },
+    #     +{ id => 4, name => 'general', },
+    #     +{ id => 5, name => 'guest', },
+    # ]
+    my $authorities = $master->authority->sort_to_hash;
+
     # 変換したい場合 (定数を求める)
 
     # 5
@@ -160,6 +170,19 @@ sub to_ids {
     die 'error master methode to_ids: ' if !scalar @keys;
     my @sort_keys = sort { $a <=> $b } @keys;
     return \@sort_keys;
+}
+
+sub sort_to_hash {
+    my $self = shift;
+    my $hash = $self->master_hash;
+    my @keys = keys %{$hash};
+    die 'error master methode sort_to_hash: ' if !scalar @keys;
+    my @sort_keys = sort { $a <=> $b } @keys;
+    my $sort_hash;
+    for my $key (@sort_keys) {
+        push @{$sort_hash}, +{ id => $key, name => $hash->{$key} };
+    }
+    return $sort_hash;
 }
 
 1;

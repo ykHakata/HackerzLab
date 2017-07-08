@@ -18,13 +18,6 @@ sub welcome {
     return 'welcome HackerzLab::Model::Viewer!!';
 }
 
-# 1: ['...','...', ...] フルパスの文字列
-sub create_public_files {
-    my $self = shift;
-    $self->public_files( $self->app->home->list_files('public') );
-    return;
-}
-
 # 2: データ構造に
 # [   +{  dir_path => $dir_path,
 #         file     => $file,

@@ -1,6 +1,7 @@
 package HackerzLab::Model;
 use Mojo::Base 'HackerzLab::Model::Base';
-use Mojo::Loader qw{find_modules load_class};
+use HackerzLab::Model::Admin;
+use HackerzLab::Model::Viewer;
 
 =encoding utf8
 
@@ -10,16 +11,13 @@ HackerzLab::Model - コントローラーモデル (呼び出し)
 
 =cut
 
-# パッケージ名以下のモジュールを再起せずに読み込み
-for my $module ( find_modules __PACKAGE__ ) {
-    my $e = load_class $module;
-    warn qq{Loading "$module" failed: $e} and next if ref $e;
-    my @names = split '::', $module;
-    my $method = lc pop @names;
-    has $method => sub {
-        $module->new( +{ app => shift->app } );
-    };
-}
+has admin => sub {
+    HackerzLab::Model::Admin->new( +{ conf => shift->conf } );
+};
+
+has viewer => sub {
+    HackerzLab::Model::Viewer->new( +{ conf => shift->conf } );
+};
 
 # 呼び出しテスト
 sub welcome {

@@ -1,5 +1,5 @@
 package HackerzLab::Controller::Admin::Staff;
-use Mojo::Base 'Mojolicious::Controller';
+use Mojo::Base 'HackerzLab::Controller';
 use Mojo::Util qw{dumper};
 
 =encoding utf8
@@ -45,7 +45,9 @@ sub search {
 
 # 新規登録画面表示
 sub create {
-    my $self = shift;
+    my $self        = shift;
+    my $admin_staff = $self->model->admin->staff->create();
+    $self->stash->{authorities} = $admin_staff->authorities;
     $self->render( template => 'admin/staff/create' );
     return;
 }
@@ -83,10 +85,7 @@ sub edit {
     }
 
     # フィルイン
-    my $html = $self->render_to_string( template => 'admin/staff/edit' );
-    my $output
-        = $self->fill_in->fill( \$html, $admin_staff->edit_form_params );
-    $self->render( text => $output );
+    $self->render_fillin('admin/staff/edit', $admin_staff->edit_form_params);
     return;
 }
 
@@ -97,24 +96,18 @@ sub store {
     # 入力
     my $admin_staff
         = $self->model->admin->staff->create( $self->req->params->to_hash );
+    $admin_staff->login_staff($self->app->login_staff);
 
     # バリデート
     $admin_staff->validator_customize('admin_staff_store');
-
-    # login_id 二重登録防止
-    if ( $admin_staff->validation_is_valid ) {
-        $admin_staff->validator_customize('not_exists_login_id');
-    }
 
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_staff->validation_has_error ) {
 
         # エラーメッセージ
+        $self->stash->{authorities} = $admin_staff->authorities;
         $self->stash->{validation_msg} = $admin_staff->validation_msg;
-        my $html
-            = $self->render_to_string( template => 'admin/staff/create' );
-        my $output = $self->fill_in->fill( \$html, $admin_staff->req_params );
-        $self->render( text => $output );
+        $self->render_fillin('admin/staff/create', $admin_staff->req_params);
         return;
     }
 
@@ -145,9 +138,7 @@ sub update {
         $self->stash->{validation_msg} = $admin_staff->validation_msg;
         $admin_staff->search_staff_update;
         $self->stash->{staff} = $admin_staff->staff_row;
-        my $html = $self->render_to_string( template => 'admin/staff/edit' );
-        my $output = $self->fill_in->fill( \$html, $admin_staff->req_params );
-        $self->render( text => $output );
+        $self->render_fillin('admin/staff/edit', $admin_staff->req_params);
         return;
     }
 

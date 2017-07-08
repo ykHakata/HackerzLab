@@ -89,8 +89,8 @@ sub get_login_staff {
     my $self = shift;
     return if !$self->login_id;
     my $NOT_DELETED
-        = $self->app->db->master->label('NOT_DELETED')->deleted->constant;
-    my $row = $self->app->db->teng->single( 'staff',
+        = $self->db->master->label('NOT_DELETED')->deleted->constant;
+    my $row = $self->db->teng->single( 'staff',
         +{ login_id => $self->login_id, deleted => $NOT_DELETED, } );
     return if !$row;
     return $row;

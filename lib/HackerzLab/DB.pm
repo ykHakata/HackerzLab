@@ -10,13 +10,7 @@ HackerzLab::DB - データベースオブジェクト (呼び出し)
 
 =cut
 
-has base => sub {
-    HackerzLab::DB::Base->new( +{ app => shift->app } );
-};
-
-has master => sub {
-    HackerzLab::DB::Master->new( +{ app => shift->app } );
-};
+has master => sub { HackerzLab::DB::Master->new(); };
 
 # 呼び出しテスト
 sub welcome {
