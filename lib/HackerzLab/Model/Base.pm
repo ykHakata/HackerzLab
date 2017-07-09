@@ -35,6 +35,15 @@ sub welcome {
     return 'welcome HackerzLab::Model::Base!!';
 }
 
+# 共通トリムチェック
+my $trim_check = sub {
+    my ( $validation, $name, $value, ) = @_;
+    my $original = $value;
+    my $trimmed  = trim($value);
+    return if length $original eq length $trimmed;
+    return 1;
+};
+
 # 共通バリデーションロジック
 sub validator_customize {
     my $self       = shift;
@@ -136,15 +145,7 @@ sub validation_admin_staff_store {
     my $validator  = Mojolicious::Validator->new;
 
     # 前後の空白禁止
-    $validator->add_check(
-        trim_check => sub {
-            my ( $validation, $name, $value, ) = @_;
-            my $original = $value;
-            my $trimmed  = trim($value);
-            return if length $original eq length $trimmed;
-            return 1;
-        }
-    );
+    $validator->add_check( trim_check => $trim_check );
 
     my $validation = $validator->validation;
 
@@ -195,23 +196,25 @@ sub validation_admin_staff_store {
 
 # 更新登録パラメーターバリデート
 sub validation_admin_staff_update {
-    my $self       = shift;
-    my $validator  = Mojolicious::Validator->new;
-    my $validation = $validator->validation;
+    my $self      = shift;
+    my $validator = Mojolicious::Validator->new;
 
+    # 前後の空白禁止
+    $validator->add_check( trim_check => $trim_check );
+
+    my $validation = $validator->validation;
     $validation->input( $self->req_params );
 
-    $validation->required('id');
-    $validation->required('address_id');
-    $validation->required('name')->size( 1, 100 );
-    $validation->required('rubi')->size( 1, 100 );
-    $validation->required('nickname')->size( 1, 100 );
-    $validation->required('email')->size( 1, 100 );
+    $validation->required('id')->trim_check;
+    $validation->required('address_id')->trim_check;
+    $validation->required('name')->size( 1, 100 )->trim_check;
+    $validation->required('rubi')->size( 1, 100 )->trim_check;
+    $validation->required('nickname')->size( 1, 100 )->trim_check;
+    $validation->required('email')->size( 1, 100 )->trim_check;
 
     $self->validation_set_error_msg(
         +{  id         => ['管理ユーザーID'],
             address_id => ['住所ID'],
-            password   => ['ログインパスワード'],
             name       => ['名前'],
             rubi       => ['ふりがな'],
             nickname   => ['表示用ニックネーム'],

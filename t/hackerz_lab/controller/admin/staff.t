@@ -346,44 +346,98 @@ subtest 'update' => sub {
     my $address_id = 6;
     my $url        = "/admin/staff/$staff_id/update";
 
-    # 変更元のデーター取得
-    my $row = $t->app->test_db->teng->single( 'address', +{ id => $address_id } );
-
-    my $post_params = +{
-        id         => $staff_id,
-        address_id => $address_id,
-        name       => '名前変更',
-        rubi       => $row->rubi,
-        nickname   => $row->nickname,
-        email      => $row->email,
+    # 更新画面表示
+    $t->get_ok("/admin/staff/$staff_id/edit")->status_is(200);
+    my $dom        = $t->tx->res->dom;
+    my $base_params = +{
+        id         => $dom->at('input[name=id]')->attr('value'),
+        address_id => $dom->at('input[name=address_id]')->attr('value'),
+        name       => $dom->at('input[name=name]')->attr('value'),
+        rubi       => $dom->at('input[name=rubi]')->attr('value'),
+        nickname   => $dom->at('input[name=nickname]')->attr('value'),
+        email      => $dom->at('input[name=email]')->attr('value'),
     };
 
-    # 成功時、詳細画面にリダイレクト
-    $t->post_ok( $url => form => $post_params )->status_is(302);
-    $t->header_is( location => "/admin/staff/$staff_id" );
-    my $location_url = $t->tx->res->headers->location;
-    $t->get_ok($location_url)->status_is(200);
+    subtest 'success staff update' => sub {
+        my $params = +{ %{$base_params}, name => '名前変更', };
 
-    # 登録完了のメッセージ
-    my $words = ['編集登録完了しました'];
-    for my $word ( @{$words} ) {
-        $t->content_like( qr{\Q$word\E}, 'content check' );
-    }
+        # 成功時、詳細画面にリダイレクト
+        $t->post_ok( $url => form => $params )->status_is(302);
+        $t->header_is( location => "/admin/staff/$staff_id" );
+        my $location_url = $t->tx->res->headers->location;
+        $t->get_ok($location_url)->status_is(200);
 
-    # DB 登録の確認
-    $row = $t->app->test_db->teng->single( 'address', +{ id => $address_id } );
-    is( $row->name, $post_params->{name}, 'create check address name' );
+        # 登録完了のメッセージ
+        $t->text_is( 'strong', '編集登録完了しました' );
 
-    # 失敗時
-    $post_params->{name} = '';
-    $t->post_ok( $url => form => $post_params )->status_is(200);
+        # DB 登録の確認
+        my $staff_row
+            = $t->app->test_db->teng->single( 'staff', +{ id => $staff_id } );
+        my $address_row = $t->app->test_db->teng->single( 'address',
+            +{ id => $address_id } );
 
-    # 失敗時のメッセージ
-    $words = ['下記のフォームに正しく入力してください'];
-    for my $word ( @{$words} ) {
-        $t->content_like( qr{\Q$word\E}, 'content check' );
-    }
+        ok( $staff_row,   'staff row' );
+        ok( $address_row, 'address row' );
 
+        is( $staff_row->id,         $params->{id},         'id' );
+        is( $address_row->id,       $params->{address_id}, 'address_id' );
+        is( $address_row->name,     $params->{name},       'name' );
+        is( $address_row->rubi,     $params->{rubi},       'rubi' );
+        is( $address_row->nickname, $params->{nickname},   'nickname' );
+        is( $address_row->email,    $params->{email},      'email' );
+
+        # テスト用DB初期化
+        $t->app->commands->run('generate_db');
+    };
+
+    subtest 'failed staff update' => sub {
+        my $common
+            = '下記のフォームに正しく入力してください';
+        my $msg_id         = '管理ユーザーID';
+        my $msg_address_id = '住所ID';
+        my $msg_name       = '名前';
+        my $msg_rubi       = 'ふりがな';
+        my $msg_nickname   = '表示用ニックネーム';
+        my $msg_email      = '連絡用メールアドレス';
+
+        subtest 'blank all' => sub {
+            my $params = +{};
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_like(qr{\Q<dd>$msg_id</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_address_id</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_name</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_rubi</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_nickname</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_email</dd>\E});
+        };
+
+        # 文字の前後のスペースは不可
+        subtest 'trim check space harf' => sub {
+            my $params = +{ %{$base_params}, name => '  hackerz  ', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_like(qr{\Q<dd>$msg_name</dd>\E});
+        };
+
+        subtest 'trim check space harf full' => sub {
+            my $params = +{ %{$base_params}, name => '  hackerz　', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->content_like(qr{\Q<dd>$msg_name</dd>\E});
+        };
+
+        subtest 'trim check space full' => sub {
+            my $params = +{ %{$base_params}, name => '　hackerz', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->content_like(qr{\Q<dd>$msg_name</dd>\E});
+        };
+
+        subtest 'trim check space full harf tab' => sub {
+            my $params = +{ %{$base_params}, name => '　   ', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->content_like(qr{\Q<dd>$msg_name</dd>\E});
+        };
+    };
     t::Util::logout_admin($t);
 };
 
@@ -441,6 +495,8 @@ subtest 'remove' => sub {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
 
+    # テスト用DB初期化
+    $t->app->commands->run('generate_db');
     t::Util::logout_admin($t);
 };
 
