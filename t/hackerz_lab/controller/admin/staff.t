@@ -215,8 +215,8 @@ subtest 'store' => sub {
     my $NOT_DELETED = $master->label('NOT_DELETED')->deleted->constant;
     my $DELETED     = $master->label('DELETED')->deleted->constant;
 
-    my $url    = '/admin/staff';
-    my $params = +{
+    my $url         = '/admin/staff';
+    my $base_params = +{
         login_id  => 'hackerz.matuzou.system@gmail.com',
         password  => 'matuzou',
         authority => 5,
@@ -226,61 +226,114 @@ subtest 'store' => sub {
         email     => 'hackerz.matuzou.system@gmail.com',
     };
 
-    # 成功時、一覧画面にリダイレクト
-    $t->post_ok( $url => form => $params )->status_is(302);
-    my $location_url = $t->tx->res->headers->location;
-    $t->get_ok($location_url)->status_is(200);
+    subtest 'success staff store' => sub {
+        my $params = +{ %{$base_params}, };
 
-    # 登録完了のメッセージ
-    my $words = ['新規登録完了しました'];
-    for my $word ( @{$words} ) {
-        $t->content_like( qr{\Q$word\E}, 'content check' );
-    }
+        # 成功時、一覧画面にリダイレクト
+        $t->post_ok( $url => form => $params )->status_is(302);
+        my $location_url = $t->tx->res->headers->location;
+        $t->get_ok($location_url)->status_is(200);
 
-    # DB 登録の確認
-    my $staff_row = $t->app->test_db->teng->single( 'staff',
-        +{ login_id => $params->{login_id} } );
+        # 登録完了のメッセージ
+        $t->text_is( 'strong', '新規登録完了しました' );
 
-    my $address_row = $t->app->test_db->teng->single( 'address',
-        +{ staff_id => $staff_row->id } );
+        # DB 登録の確認
+        my $staff_row = $t->app->test_db->teng->single( 'staff',
+            +{ login_id => $params->{login_id} } );
 
-    ok( $staff_row,   'create check staff row' );
-    ok( $address_row, 'create check address row' );
+        my $address_row = $t->app->test_db->teng->single( 'address',
+            +{ staff_id => $staff_row->id } );
 
-    is( $staff_row->login_id,  $params->{login_id},  'login_id' );
-    is( $staff_row->password,  $params->{password},  'password' );
-    is( $staff_row->authority, $params->{authority}, 'authority' );
-    is( $staff_row->deleted,   $NOT_DELETED,         'deleted' );
+        ok( $staff_row,   'create check staff row' );
+        ok( $address_row, 'create check address row' );
 
-    is( $address_row->staff_id, $staff_row->id,      'staff_id' );
-    is( $address_row->name,     $params->{name},     'name' );
-    is( $address_row->rubi,     $params->{rubi},     'rubi' );
-    is( $address_row->nickname, $params->{nickname}, 'nickname' );
-    is( $address_row->email,    $params->{email},    'email' );
-    is( $address_row->deleted,  $NOT_DELETED,        'deleted' );
+        is( $staff_row->login_id,  $params->{login_id},  'login_id' );
+        is( $staff_row->password,  $params->{password},  'password' );
+        is( $staff_row->authority, $params->{authority}, 'authority' );
+        is( $staff_row->deleted,   $NOT_DELETED,         'deleted' );
 
-    # 失敗時
-    $params->{login_id} = '';
-    $t->post_ok( $url => form => $params )->status_is(200);
+        is( $address_row->staff_id, $staff_row->id,      'staff_id' );
+        is( $address_row->name,     $params->{name},     'name' );
+        is( $address_row->rubi,     $params->{rubi},     'rubi' );
+        is( $address_row->nickname, $params->{nickname}, 'nickname' );
+        is( $address_row->email,    $params->{email},    'email' );
+        is( $address_row->deleted,  $NOT_DELETED,        'deleted' );
 
-    # 失敗時のメッセージ
-    $words = ['下記のフォームに正しく入力してください'];
-    for my $word ( @{$words} ) {
-        $t->content_like( qr{\Q$word\E}, 'content check' );
-    }
+        # テスト用DB初期化
+        $t->app->commands->run('generate_db');
+    };
 
-    # login_id 二重登録防止
-    $params->{login_id} = 'hackerz.lab.system@gmail.com';
-    $t->post_ok( $url => form => $params )->status_is(200);
+    subtest 'failed staff store' => sub {
 
-    # 失敗時のメッセージ
-    $words = [
-        '下記のフォームに正しく入力してください',
-        '入力されたログインID(email)はすでに登録済みです',
-    ];
-    for my $word ( @{$words} ) {
-        $t->content_like( qr{\Q$word\E}, 'content check' );
-    }
+        my $common
+            = '下記のフォームに正しく入力してください';
+        my $msg_login_id  = 'ログインID';
+        my $msg_password  = 'ログインパスワード';
+        my $msg_authority = '管理者権限';
+        my $msg_name      = '名前';
+        my $msg_rubi      = 'ふりがな';
+        my $msg_nickname  = '表示用ニックネーム';
+        my $msg_email     = '連絡用メールアドレス';
+        my $duplication_email
+            = '入力されたログインID(email)はすでに登録済みです';
+
+        subtest 'blank all' => sub {
+            my $params = +{};
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_like(qr{\Q<dd>$msg_login_id</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_password</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_authority</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_name</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_rubi</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_nickname</dd>\E});
+            $t->content_like(qr{\Q<dd>$msg_email</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$duplication_email</dd>\E});
+        };
+
+        # login_id 二重登録防止
+        subtest 'duplication store login_id' => sub {
+            my $params = +{
+                %{$base_params}, login_id => 'hackerz.lab.system@gmail.com',
+            };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_unlike(qr{\Q<dd>$msg_login_id</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$msg_password</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$msg_authority</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$msg_name</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$msg_rubi</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$msg_nickname</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$msg_email</dd>\E});
+            $t->content_like(qr{\Q<dd>$duplication_email</dd>\E});
+        };
+
+        # 文字の前後のスペースは不可
+        subtest 'trim check space harf' => sub {
+            my $params = +{ %{$base_params}, password => '  hackerz  ', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_like(qr{\Q<dd>$msg_password</dd>\E});
+        };
+
+        subtest 'trim check space harf full' => sub {
+            my $params = +{ %{$base_params}, password => '  hackerz　', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->content_like(qr{\Q<dd>$msg_password</dd>\E});
+        };
+
+        subtest 'trim check space full' => sub {
+            my $params = +{ %{$base_params}, password => '　hackerz', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->content_like(qr{\Q<dd>$msg_password</dd>\E});
+        };
+
+        subtest 'trim check space full harf tab' => sub {
+            my $params = +{ %{$base_params}, password => '　  	', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->content_like(qr{\Q<dd>$msg_password</dd>\E});
+        };
+    };
 
     t::Util::logout_admin($t);
 };

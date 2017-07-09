@@ -1,6 +1,6 @@
 package HackerzLab::Model::Base;
 use Mojo::Base -base;
-use Mojo::Util qw{dumper};
+use Mojo::Util qw{dumper trim};
 use HackerzLab::DB;
 use Mojolicious::Validator;
 
@@ -105,8 +105,7 @@ sub validation_admin_auth_login {
             return;
         }
     );
-    my $value = $validation->param('login_id');
-    $validation->required('login_id')->exists_login_id($value);
+    $validation->required('login_id')->exists_login_id;
     $self->validation_set_error_msg(
         +{ login_id => ['ログインID(email)が存在しません'], } );
     return $validation if $validation->has_error;
@@ -125,8 +124,7 @@ sub validation_admin_auth_login {
             return 1;
         }
     );
-    $value = $validation->param('password');
-    $validation->required('password')->check_password($value);
+    $validation->required('password')->check_password;
     $self->validation_set_error_msg(
         +{ password => ['ログインパスワードがちがいます'] } );
     return $validation;
@@ -136,17 +134,29 @@ sub validation_admin_auth_login {
 sub validation_admin_staff_store {
     my $self       = shift;
     my $validator  = Mojolicious::Validator->new;
+
+    # 前後の空白禁止
+    $validator->add_check(
+        trim_check => sub {
+            my ( $validation, $name, $value, ) = @_;
+            my $original = $value;
+            my $trimmed  = trim($value);
+            return if length $original eq length $trimmed;
+            return 1;
+        }
+    );
+
     my $validation = $validator->validation;
 
     $validation->input( $self->req_params );
 
-    $validation->required('login_id')->size( 1, 100 );
-    $validation->required('password')->size( 1, 100 );
-    $validation->required('authority');
-    $validation->required('name')->size( 1, 100 );
-    $validation->required('rubi')->size( 1, 100 );
-    $validation->required('nickname')->size( 1, 100 );
-    $validation->required('email')->size( 1, 100 );
+    $validation->required('login_id')->size( 1, 100 )->trim_check;
+    $validation->required('password')->size( 1, 100 )->trim_check;
+    $validation->required('authority')->trim_check;
+    $validation->required('name')->size( 1, 100 )->trim_check;
+    $validation->required('rubi')->size( 1, 100 )->trim_check;
+    $validation->required('nickname')->size( 1, 100 )->trim_check;
+    $validation->required('email')->size( 1, 100 )->trim_check;
 
     $self->validation_set_error_msg(
         +{  login_id  => ['ログインID'],
@@ -173,9 +183,7 @@ sub validation_admin_staff_store {
             return;
         }
     );
-
-    my $value = $validation->param('login_id');
-    $validation->required('login_id')->not_exists_login_id($value);
+    $validation->required('login_id')->not_exists_login_id;
     $self->validation_set_error_msg(
         +{  login_id => [
                 '入力されたログインID(email)はすでに登録済みです'
