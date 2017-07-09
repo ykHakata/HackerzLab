@@ -73,59 +73,6 @@ sub validator_customize {
     return $self;
 }
 
-# DB 存在確認
-sub validation_exists_login_id {
-    my $self      = shift;
-    my $validator = Mojolicious::Validator->new;
-    $validator->add_check(
-        exists_login_id => sub {
-            my ( $validation, $name, $login_id, ) = @_;
-            my $NOT_DELETED
-                = $self->db->master->label('NOT_DELETED')
-                ->deleted->constant;
-            my $row = $self->db->teng->single( 'staff',
-                +{ login_id => $login_id, deleted => $NOT_DELETED, } );
-            $self->validation_login_staff($row);
-            return 1 if !$row;
-            return;
-        }
-    );
-    my $validation = $validator->validation;
-    $validation->input( $self->req_params );
-    my $value = $validation->param('login_id');
-    $validation->required('login_id')->exists_login_id($value);
-    $self->validation_set_error_msg(
-        +{ login_id => ['ログインID(email)が存在しません'], } );
-    return $validation;
-}
-
-# password 照合
-sub validation_check_password {
-    my $self      = shift;
-    my $validator = Mojolicious::Validator->new;
-    $validator->add_check(
-        check_password => sub {
-
-            # TODO DB のパスワードは暗号化される予定
-            # $row->password を複合化して照合
-            # return if $password eq $self->decrypt($row->password);
-            my ( $validation, $name, $password, ) = @_;
-            my $row = $self->validation_login_staff;
-            return 1 if !$row;
-            return   if $password eq $row->password;
-            return 1;
-        }
-    );
-
-    my $validation = $validator->validation;
-    $validation->input( $self->req_params );
-    my $value = $validation->param('password');
-    $validation->required('password')->check_password($value);
-    $self->validation_set_error_msg(
-        +{ password => ['ログインパスワードがちがいます'] } );
-    return $validation;
-}
-
 # 新規登録パラメーターバリデート
 sub validation_admin_auth_login {
     my $self       = shift;
@@ -142,6 +89,46 @@ sub validation_admin_auth_login {
             password => ['ログインパスワード'],
         }
     );
+    return $validation if $validation->has_error;
+
+    # DB 存在確認
+    $validator->add_check(
+        exists_login_id => sub {
+            my ( $validation, $name, $login_id, ) = @_;
+            my $NOT_DELETED
+                = $self->db->master->label('NOT_DELETED')
+                ->deleted->constant;
+            my $row = $self->db->teng->single( 'staff',
+                +{ login_id => $login_id, deleted => $NOT_DELETED, } );
+            $self->validation_login_staff($row);
+            return 1 if !$row;
+            return;
+        }
+    );
+    my $value = $validation->param('login_id');
+    $validation->required('login_id')->exists_login_id($value);
+    $self->validation_set_error_msg(
+        +{ login_id => ['ログインID(email)が存在しません'], } );
+    return $validation if $validation->has_error;
+
+    # password 照合
+    $validator->add_check(
+        check_password => sub {
+
+            # TODO DB のパスワードは暗号化される予定
+            # $row->password を複合化して照合
+            # return if $password eq $self->decrypt($row->password);
+            my ( $validation, $name, $password, ) = @_;
+            my $row = $self->validation_login_staff;
+            return 1 if !$row;
+            return   if $password eq $row->password;
+            return 1;
+        }
+    );
+    $value = $validation->param('password');
+    $validation->required('password')->check_password($value);
+    $self->validation_set_error_msg(
+        +{ password => ['ログインパスワードがちがいます'] } );
     return $validation;
 }
 

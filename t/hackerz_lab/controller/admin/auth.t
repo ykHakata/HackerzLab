@@ -52,76 +52,126 @@ subtest 'login logout display' => sub {
 # 認証機能のテスト
 subtest 'auth check' => sub {
 
-    # テスト用の staff データの存在確認
-    my $row = $t->app->test_db->teng->single( 'staff', +{ id => 1 } );
-    ok($row);
+    subtest 'success login logout' => sub {
 
-    # ログインへのアクセス
-    my $url    = '/admin/login';
-    my $params = +{
-        login_id => $row->login_id,
-        password => $row->password,
+        # テスト用の staff データの存在確認
+        my $row = $t->app->test_db->teng->single( 'staff', +{ id => 1 } );
+        ok($row);
+        my $login_id = $row->login_id;
+        my $password = $row->password;
+
+        # セッションの存在確認
+        my $session_id
+            = $t->app->build_controller( $t->tx )->session('login_id');
+        is( $session_id, undef, 'session_id' );
+
+        # ログインへのアクセス
+        my $url    = '/admin/login';
+        my $params = +{
+            login_id => $login_id,
+            password => $password,
+        };
+
+        # リクエスト (成功時 menu 画面)controller_class;
+        $t->post_ok( $url => form => $params )->status_is(302);
+        my $location_url = $t->tx->res->headers->location;
+        $t->get_ok($location_url)->status_is(200);
+        $t->text_is( 'strong', "$login_id ログインしました" );
+
+        # セッションの存在確認
+        $session_id = $t->app->build_controller( $t->tx )->session('login_id');
+        ok( $session_id, 'session_id' );
+
+        # ログアウトの実行
+        $t->post_ok('/admin/logout')->status_is(302);
+        $location_url = $t->tx->res->headers->location;
+        $t->get_ok($location_url)->status_is(200);
+        $t->text_is( 'h4', 'ログアウトしました' );
+
+        # セッションの存在確認
+        $session_id
+            = $t->app->build_controller( $t->tx )->session('login_id');
+        is( $session_id, undef, 'session_id' );
     };
 
-    # セッションの存在確認
-    my $session_id = $t->app->build_controller( $t->tx )->session('login_id');
-    is( $session_id, undef, 'session_id' );
+    subtest 'failed login' => sub {
 
-    # 302リダイレクトレスポンスの許可
-    $t->ua->max_redirects(1);
+        my $row = $t->app->test_db->teng->single( 'staff', +{ id => 1 } );
+        my $login_id = $row->login_id;
+        my $password = $row->password;
+        my $url         = '/admin/login';
+        my $base_params = +{
+            login_id => $login_id,
+            password => $password,
+        };
 
-    # リクエスト (成功時 menu 画面)controller_class;
-    $t->post_ok( $url => form => $params )->status_is(200);
+        my $common
+            = '下記のフォームに正しく入力してください';
+        my $blank_id       = 'ログインID(email)';
+        my $blank_pass     = 'ログインパスワード';
+        my $not_exist_id   = 'ログインID(email)が存在しません';
+        my $not_value_pass = 'ログインパスワードがちがいます';
 
-    # 遷移先の画面でログイン成功のメッセージ
-    $t->content_like(qr{\Qログインしました\E});
+        # login_id 入力されていない
+        subtest 'blank login_id' => sub {
+            my $params = +{ %{$base_params}, login_id => '', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_like(qr{\Q<dd>$blank_id</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$blank_pass</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$not_exist_id</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$not_value_pass</dd>\E});
+        };
 
-    # 必ず戻すように ...
-    $t->ua->max_redirects(0);
+        # password 入力されていない
+        subtest 'blank password' => sub {
+            my $params = +{ %{$base_params}, password => '', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_unlike(qr{\Q<dd>$blank_id</dd>\E});
+            $t->content_like(qr{\Q<dd>$blank_pass</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$not_exist_id</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$not_value_pass</dd>\E});
+        };
 
-    # セッションの存在確認
-    $session_id = $t->app->build_controller( $t->tx )->session('login_id');
-    ok( $session_id, 'session_id' );
+        # login_id password 入力されていない
+        subtest 'blank login_id password' => sub {
+            my $params = +{
+                %{$base_params},
+                login_id => '',
+                password => '',
+            };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_like(qr{\Q<dd>$blank_id</dd>\E});
+            $t->content_like(qr{\Q<dd>$blank_pass</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$not_exist_id</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$not_value_pass</dd>\E});
+        };
 
-    # ログアウトの実行
-    $t->post_ok('/admin/logout')->status_is(302);
+        # ログインID が存在しない
+        subtest 'not exist login_id' => sub {
+            my $params
+                = +{ %{$base_params}, login_id => 'hackerz@gmail.com', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_unlike(qr{\Q<dd>$blank_id</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$blank_pass</dd>\E});
+            $t->content_like(qr{\Q<dd>$not_exist_id</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$not_value_pass</dd>\E});
+        };
 
-    # リダイレクト先の確認
-    my $location_url = '/admin/logout';
-    $t->header_is( location => $location_url );
-
-    # リダイレクト先でアクセス後、セッション確認
-    $t->get_ok($location_url)->status_is(200);
-    $session_id = $t->app->build_controller( $t->tx )->session('login_id');
-    is( $session_id, undef, 'session_id' );
-
-    # バリデーション失敗時
-    $params->{login_id} = '';
-    $t->post_ok( $url => form => $params )->status_is(200);
-
-    # 失敗時のメッセージ
-    my $words = ['下記のフォームに正しく入力してください'];
-    for my $word ( @{$words} ) {
-        $t->content_like( qr{\Q$word\E}, 'content check' );
-    }
-
-    # ログインID が違う
-    $params->{login_id} = 'hackerz@gmail.com';
-    # $params->{password} = '12345';
-    $t->post_ok( $url => form => $params )->status_is(200);
-    $words = ['下記のフォームに正しく入力してください'];
-    for my $word ( @{$words} ) {
-        $t->content_like( qr{\Q$word\E}, 'content check' );
-    }
-
-    # パスワードが違う
-    $params->{login_id} = $row->login_id;
-    $params->{password} = '12345';
-    $t->post_ok( $url => form => $params )->status_is(200);
-    $words = ['下記のフォームに正しく入力してください'];
-    for my $word ( @{$words} ) {
-        $t->content_like( qr{\Q$word\E}, 'content check' );
-    }
+        # パスワードが違う
+        subtest 'not value password' => sub {
+            my $params = +{ %{$base_params}, password => '12345', };
+            $t->post_ok( $url => form => $params )->status_is(200);
+            $t->text_is( 'strong', $common );
+            $t->content_unlike(qr{\Q<dd>$blank_id</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$blank_pass</dd>\E});
+            $t->content_unlike(qr{\Q<dd>$not_exist_id</dd>\E});
+            $t->content_like(qr{\Q<dd>$not_value_pass</dd>\E});
+        };
+    };
 
     #  入力フォームの存在確認
     $t->get_ok('/admin/login')->status_is(200);

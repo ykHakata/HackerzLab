@@ -76,14 +76,12 @@
     <!-- /汎用のメッセージ、リダイレクト時 -->
     <!-- バリデーションエラー -->
     % if (my $validation_msg = stash('validation_msg')) {
-    <div class="text-center">
-      <mark><strong>
-      下記のフォームに正しく入力してください<br>
-      % for my $msg ( @{$validation_msg} ) {
-      <%= $msg %><br>
-      % }
-      </strong></mark>
-    </div>
+    <p><strong>下記のフォームに正しく入力してください</strong></p>
+    <dl class="alert alert-warning" role="alert">
+    % for my $msg ( @{$validation_msg} ) {
+      <dd><%= $msg %></dd>
+    % }
+    </dl>
     % }
     <!-- /バリデーションエラー -->
     <%= content =%>

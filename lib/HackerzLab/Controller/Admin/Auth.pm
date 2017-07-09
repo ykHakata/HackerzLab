@@ -19,16 +19,6 @@ sub login {
     # バリデート
     $admin_auth->validator_customize('admin_auth_login');
 
-    # staff, login_id 存在確認
-    if ( $admin_auth->validation_is_valid ) {
-        $admin_auth->validator_customize('exists_login_id');
-    }
-
-    # password 照合
-    if ( $admin_auth->validation_is_valid ) {
-        $admin_auth->validator_customize('check_password');
-    }
-
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_auth->validation_has_error ) {
 
