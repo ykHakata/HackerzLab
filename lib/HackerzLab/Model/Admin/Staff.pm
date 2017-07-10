@@ -285,6 +285,18 @@ sub authorities {
     return $authorities;
 }
 
+# login_id 二重登録防止、存在確認
+sub is_duplication_staff_id {
+    my $self     = shift;
+    my $login_id = $self->req_params->{login_id};
+    my $NOT_DELETED
+        = $self->db->master->label('NOT_DELETED')->deleted->constant;
+    my $row = $self->db->teng->single( 'staff',
+        +{ login_id => $login_id, deleted => $NOT_DELETED, } );
+    return 1 if $row;
+    return;
+}
+
 1;
 
 __END__

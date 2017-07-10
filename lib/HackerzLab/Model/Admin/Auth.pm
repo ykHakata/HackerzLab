@@ -96,6 +96,33 @@ sub get_login_staff {
     return $row;
 }
 
+# DB 存在確認
+sub is_not_exist_login_id {
+    my $self     = shift;
+    my $login_id = $self->req_params->{login_id};
+    my $NOT_DELETED
+        = $self->db->master->label('NOT_DELETED')->deleted->constant;
+    my $row = $self->db->teng->single( 'staff',
+        +{ login_id => $login_id, deleted => $NOT_DELETED, } );
+    $self->validation_login_staff($row);
+    return 1 if !$row;
+    return;
+}
+
+# password 照合
+sub is_not_exist_password {
+    my $self     = shift;
+    my $password = $self->req_params->{password};
+
+    # TODO DB のパスワードは暗号化される予定
+    # $row->password を複合化して照合
+    # return if $password eq $self->decrypt($row->password);
+    my $row = $self->validation_login_staff;
+    return 1 if !$row;
+    return   if $password eq $row->password;
+    return 1;
+}
+
 1;
 
 __END__

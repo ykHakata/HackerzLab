@@ -107,7 +107,7 @@ subtest 'auth check' => sub {
 
         my $common
             = '下記のフォームに正しく入力してください';
-        my $blank_id       = 'ログインID(email)';
+        my $blank_id       = 'ログインID';
         my $blank_pass     = 'ログインパスワード';
         my $not_exist_id   = 'ログインID(email)が存在しません';
         my $not_value_pass = 'ログインパスワードがちがいます';

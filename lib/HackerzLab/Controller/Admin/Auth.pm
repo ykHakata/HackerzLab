@@ -15,16 +15,32 @@ sub login {
 
     my $params     = $self->req->params->to_hash;
     my $admin_auth = $self->model->admin->auth->create($params);
+    my $msg        = $admin_auth->db->message;
 
     # バリデート
     $admin_auth->validator_customize('admin_auth_login');
+    my $template = 'admin/login';
 
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_auth->validation_has_error ) {
-
-        # エラーメッセージ
         $self->stash->{validation_msg} = $admin_auth->validation_msg;
-        $self->render_fillin('admin/login', $admin_auth->req_params);
+        $self->render_fillin( $template, $admin_auth->req_params );
+        return;
+    }
+
+    # DB 存在確認
+    if ( $admin_auth->is_not_exist_login_id ) {
+        $self->stash->{validation_msg}
+            = [ $msg->error('NOT_EXIST_LOGIN_ID') ];
+        $self->render_fillin( $template, $admin_auth->req_params );
+        return;
+    }
+
+    # password 照合
+    if ( $admin_auth->is_not_exist_password ) {
+        $self->stash->{validation_msg}
+            = [ $msg->error('NOT_EXIST_PASSWORD') ];
+        $self->render_fillin( $template, $admin_auth->req_params );
         return;
     }
 
@@ -38,7 +54,8 @@ sub login {
     $self->session( login_id => $admin_auth->encrypt_session_id() );
 
     # ログイン成功メッセージ埋め込み
-    $self->flash( flash_msg => $admin_auth->login_id . ' ログインしました');
+    my $flash_msg = $admin_auth->login_id . ' ' . $msg->common('DONE_LOGIN');
+    $self->flash( flash_msg => $flash_msg );
 
     # 管理画面トップへ
     $self->redirect_to('/admin/menu');

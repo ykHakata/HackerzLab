@@ -98,7 +98,7 @@ subtest 'search' => sub {
 
     # 検索に該当しない場合のメッセージ
     $t->get_ok('/admin/staff/search?id=999999&name=')->status_is(200);
-    $words = [ '絞り込み検索', '「検索該当がありません」' ];
+    $words = [ '絞り込み検索', '検索該当がありません' ];
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
@@ -120,7 +120,7 @@ subtest 'search' => sub {
 
     # address テーブル検索 ( ID が違うので失敗)
     $t->get_ok( '/admin/staff/search?id=99&name=' . $chars )->status_is(200);
-    $words = [ '絞り込み検索', '「検索該当がありません」' ];
+    $words = [ '絞り込み検索', '検索該当がありません' ];
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
@@ -175,6 +175,12 @@ subtest 'show' => sub {
     for my $word ( @{$words} ) {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
+
+    # 不正なアクセス
+    $t->get_ok('/admin/staff/99')->status_is(302);
+    my $location_url = $t->tx->res->headers->location;
+    $t->get_ok($location_url)->status_is(200);
+    $t->text_is( 'strong', '存在しないユーザー' );
     t::Util::logout_admin($t);
 };
 
@@ -204,6 +210,11 @@ subtest 'edit' => sub {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
 
+    # 不正なアクセス
+    $t->get_ok('/admin/staff/99/edit')->status_is(302);
+    my $location_url = $t->tx->res->headers->location;
+    $t->get_ok($location_url)->status_is(200);
+    $t->text_is( 'strong', '存在しないユーザー' );
     t::Util::logout_admin($t);
 };
 
@@ -272,8 +283,8 @@ subtest 'store' => sub {
         my $msg_authority = '管理者権限';
         my $msg_name      = '名前';
         my $msg_rubi      = 'ふりがな';
-        my $msg_nickname  = '表示用ニックネーム';
-        my $msg_email     = '連絡用メールアドレス';
+        my $msg_nickname  = 'ニックネーム';
+        my $msg_email     = 'Eメール';
         my $duplication_email
             = '入力されたログインID(email)はすでに登録済みです';
 
@@ -397,8 +408,8 @@ subtest 'update' => sub {
         my $msg_address_id = '住所ID';
         my $msg_name       = '名前';
         my $msg_rubi       = 'ふりがな';
-        my $msg_nickname   = '表示用ニックネーム';
-        my $msg_email      = '連絡用メールアドレス';
+        my $msg_nickname   = 'ニックネーム';
+        my $msg_email      = 'Eメール';
 
         subtest 'blank all' => sub {
             my $params = +{};

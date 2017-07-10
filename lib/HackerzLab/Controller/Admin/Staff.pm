@@ -27,6 +27,7 @@ sub search {
     my $self = shift;
     my $admin_staff
         = $self->model->admin->staff->create( $self->req->params->to_hash );
+    my $msg = $admin_staff->db->message;
 
     # 入力条件による検索
     $admin_staff->search_staff_search;
@@ -37,7 +38,7 @@ sub search {
 
     # teng の row は該当なしの場合は undef だが pager は []
     if ( !@{ $self->stash->{staffs} } ) {
-        $self->stash->{msg} = '「検索該当がありません」';
+        $self->stash->{msg} = $msg->common('NOT_EXIST_STAFF_SEARCH');
     }
     $self->render( template => 'admin/staff/index' );
     return;
@@ -57,11 +58,12 @@ sub show {
     my $self        = shift;
     my $params      = +{ id => $self->stash->{id}, };
     my $admin_staff = $self->model->admin->staff->create($params);
+    my $msg         = $admin_staff->db->message;
     $self->stash->{staff} = $admin_staff->search_staff_show->staff_row;
 
     # 存在しないユーザー
     if ( !$self->stash->{staff} ) {
-        $self->flash( flash_msg => '存在しないユーザー' );
+        $self->flash( flash_msg => $msg->common('NOT_EXIST_STAFF') );
         $self->redirect_to('/admin/staff');
         return;
     }
@@ -74,18 +76,20 @@ sub edit {
     my $self        = shift;
     my $params      = +{ id => $self->stash->{id}, };
     my $admin_staff = $self->model->admin->staff->create($params);
+    my $msg         = $admin_staff->db->message;
     $admin_staff->search_staff_edit;
     $self->stash->{staff} = $admin_staff->staff_row;
 
     # 存在しないユーザー
     if ( !$self->stash->{staff} ) {
-        $self->flash( flash_msg => '存在しないユーザー' );
+        $self->flash( flash_msg => $msg->common('NOT_EXIST_STAFF') );
         $self->redirect_to('/admin/staff');
         return;
     }
 
     # フィルイン
-    $self->render_fillin('admin/staff/edit', $admin_staff->edit_form_params);
+    $self->render_fillin( 'admin/staff/edit',
+        $admin_staff->edit_form_params );
     return;
 }
 
@@ -96,18 +100,26 @@ sub store {
     # 入力
     my $admin_staff
         = $self->model->admin->staff->create( $self->req->params->to_hash );
-    $admin_staff->login_staff($self->app->login_staff);
+    $admin_staff->login_staff( $self->app->login_staff );
+    my $msg = $admin_staff->db->message;
 
     # バリデート
     $admin_staff->validator_customize('admin_staff_store');
+    $self->stash->{authorities} = $admin_staff->authorities;
+    my $template = 'admin/staff/create';
 
     # 失敗、フィルイン、もう一度入力フォーム表示
     if ( $admin_staff->validation_has_error ) {
-
-        # エラーメッセージ
-        $self->stash->{authorities} = $admin_staff->authorities;
         $self->stash->{validation_msg} = $admin_staff->validation_msg;
-        $self->render_fillin('admin/staff/create', $admin_staff->req_params);
+        $self->render_fillin( $template, $admin_staff->req_params );
+        return;
+    }
+
+    # login_id 二重登録防止、存在確認
+    if ( $admin_staff->is_duplication_staff_id ) {
+        $self->stash->{validation_msg}
+            = [ $msg->error('DUPLICATION_LOGIN_ID') ];
+        $self->render_fillin( $template, $admin_staff->req_params );
         return;
     }
 
@@ -115,7 +127,7 @@ sub store {
     $admin_staff->exec_staff_store;
 
     # 書き込み保存終了、管理画面一覧へリダイレクト終了
-    $self->flash( flash_msg => '新規登録完了しました' );
+    $self->flash( flash_msg => $msg->common('DONE_STORE') );
     $self->redirect_to('/admin/staff');
     return;
 }
@@ -127,6 +139,7 @@ sub update {
     # 入力
     my $admin_staff
         = $self->model->admin->staff->create( $self->req->params->to_hash );
+    my $msg = $admin_staff->db->message;
 
     # バリデート
     $admin_staff->validator_customize('admin_staff_update');
@@ -138,7 +151,7 @@ sub update {
         $self->stash->{validation_msg} = $admin_staff->validation_msg;
         $admin_staff->search_staff_update;
         $self->stash->{staff} = $admin_staff->staff_row;
-        $self->render_fillin('admin/staff/edit', $admin_staff->req_params);
+        $self->render_fillin( 'admin/staff/edit', $admin_staff->req_params );
         return;
     }
 
@@ -146,7 +159,7 @@ sub update {
     $admin_staff->exec_staff_update;
 
     # 書き込み保存終了、修正画面リダイレクト終了
-    $self->flash( flash_msg => '編集登録完了しました' );
+    $self->flash( flash_msg => $msg->common('DONE_UPDATE') );
     $self->redirect_to( '/admin/staff/' . $admin_staff->show_id );
     return;
 }
@@ -156,12 +169,13 @@ sub remove {
     my $self        = shift;
     my $params      = +{ id => $self->stash->{id}, };
     my $admin_staff = $self->model->admin->staff->create($params);
+    my $msg         = $admin_staff->db->message;
 
     # 削除実行
     $admin_staff->exec_staff_remove;
 
     # 完了後リダイレクト終了
-    $self->flash( flash_msg => '削除完了しました' );
+    $self->flash( flash_msg => $msg->common('DONE_REMOVE') );
     $self->redirect_to('/admin/staff');
     return;
 }

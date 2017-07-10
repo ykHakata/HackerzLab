@@ -87,6 +87,7 @@ sub validation_admin_auth_login {
     my $self       = shift;
     my $validator  = Mojolicious::Validator->new;
     my $validation = $validator->validation;
+    my $msg        = $self->db->message;
 
     $validation->input( $self->req_params );
 
@@ -94,55 +95,18 @@ sub validation_admin_auth_login {
     $validation->required('password')->size( 1, 100 );
 
     $self->validation_set_error_msg(
-        +{  login_id => ['ログインID(email)'],
-            password => ['ログインパスワード'],
+        +{  login_id => [ $msg->column('STAFF_LOGIN_ID') ],
+            password => [ $msg->column('STAFF_PASSWORD') ],
         }
     );
-    return $validation if $validation->has_error;
-
-    # DB 存在確認
-    $validator->add_check(
-        exists_login_id => sub {
-            my ( $validation, $name, $login_id, ) = @_;
-            my $NOT_DELETED
-                = $self->db->master->label('NOT_DELETED')
-                ->deleted->constant;
-            my $row = $self->db->teng->single( 'staff',
-                +{ login_id => $login_id, deleted => $NOT_DELETED, } );
-            $self->validation_login_staff($row);
-            return 1 if !$row;
-            return;
-        }
-    );
-    $validation->required('login_id')->exists_login_id;
-    $self->validation_set_error_msg(
-        +{ login_id => ['ログインID(email)が存在しません'], } );
-    return $validation if $validation->has_error;
-
-    # password 照合
-    $validator->add_check(
-        check_password => sub {
-
-            # TODO DB のパスワードは暗号化される予定
-            # $row->password を複合化して照合
-            # return if $password eq $self->decrypt($row->password);
-            my ( $validation, $name, $password, ) = @_;
-            my $row = $self->validation_login_staff;
-            return 1 if !$row;
-            return   if $password eq $row->password;
-            return 1;
-        }
-    );
-    $validation->required('password')->check_password;
-    $self->validation_set_error_msg(
-        +{ password => ['ログインパスワードがちがいます'] } );
     return $validation;
 }
 
 # 新規登録パラメーターバリデート
 sub validation_admin_staff_store {
-    my $self       = shift;
-    my $validator  = Mojolicious::Validator->new;
+    my $self      = shift;
+    my $validator = Mojolicious::Validator->new;
+    my $msg       = $self->db->message;
 
     # 前後の空白禁止
     $validator->add_check( trim_check => $trim_check );
@@ -160,35 +124,13 @@ sub validation_admin_staff_store {
     $validation->required('email')->size( 1, 100 )->trim_check;
 
     $self->validation_set_error_msg(
-        +{  login_id  => ['ログインID'],
-            password  => ['ログインパスワード'],
-            authority => ['管理者権限'],
-            name      => ['名前'],
-            rubi      => ['ふりがな'],
-            nickname  => ['表示用ニックネーム'],
-            email     => ['連絡用メールアドレス'],
-        }
-    );
-    return $validation if $validation->has_error;
-
-    # login_id 二重登録防止
-    $validator->add_check(
-        not_exists_login_id => sub {
-            my ( $validation, $name, $login_id, ) = @_;
-            my $NOT_DELETED
-                = $self->db->master->label('NOT_DELETED')
-                ->deleted->constant;
-            my $row = $self->db->teng->single( 'staff',
-                +{ login_id => $login_id, deleted => $NOT_DELETED, } );
-            return 1 if $row;
-            return;
-        }
-    );
-    $validation->required('login_id')->not_exists_login_id;
-    $self->validation_set_error_msg(
-        +{  login_id => [
-                '入力されたログインID(email)はすでに登録済みです'
-            ],
+        +{  login_id  => [ $msg->column('STAFF_LOGIN_ID') ],
+            password  => [ $msg->column('STAFF_PASSWORD') ],
+            authority => [ $msg->column('STAFF_AUTHORITY') ],
+            name      => [ $msg->column('ADDRESS_NAME') ],
+            rubi      => [ $msg->column('ADDRESS_RUBI') ],
+            nickname  => [ $msg->column('ADDRESS_NICKNAME') ],
+            email     => [ $msg->column('ADDRESS_EMAIL') ],
         }
     );
     return $validation;
@@ -198,6 +140,7 @@ sub validation_admin_staff_store {
 sub validation_admin_staff_update {
     my $self      = shift;
     my $validator = Mojolicious::Validator->new;
+    my $msg       = $self->db->message;
 
     # 前後の空白禁止
     $validator->add_check( trim_check => $trim_check );
@@ -213,12 +156,12 @@ sub validation_admin_staff_update {
     $validation->required('email')->size( 1, 100 )->trim_check;
 
     $self->validation_set_error_msg(
-        +{  id         => ['管理ユーザーID'],
-            address_id => ['住所ID'],
-            name       => ['名前'],
-            rubi       => ['ふりがな'],
-            nickname   => ['表示用ニックネーム'],
-            email      => ['連絡用メールアドレス'],
+        +{  id         => [ $msg->column('STAFF_ID') ],
+            address_id => [ $msg->column('ADDRESS_ID') ],
+            name       => [ $msg->column('ADDRESS_NAME') ],
+            rubi       => [ $msg->column('ADDRESS_RUBI') ],
+            nickname   => [ $msg->column('ADDRESS_NICKNAME') ],
+            email      => [ $msg->column('ADDRESS_EMAIL') ],
         }
     );
     return $validation;
