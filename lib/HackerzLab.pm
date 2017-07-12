@@ -41,7 +41,6 @@ sub startup {
         before_dispatch => sub {
             my $c          = shift;
             my $url        = $c->req->url;
-            my $admin_auth = $self->model->admin->auth->create();
             $self->helper( login_staff => sub {undef} );
 
             # ログイン、ログアウトページは例外
@@ -52,10 +51,11 @@ sub startup {
             if ( $url =~ m{^/admin} ) {
 
                 # セッション情報からログイン者の情報を取得
-                $admin_auth->login_id( $c->session('login_id') );
-                if ( $admin_auth->login_id ) {
-                    my $staff_row = $admin_auth->get_login_staff;
-                    $self->helper( login_staff => sub {$staff_row} );
+                my $admin_auth = $self->model->admin->auth->req_params(
+                    +{ login_id => $c->session('login_id') } );
+                if ( $admin_auth->is_valid_session ) {
+                    $self->helper(
+                        login_staff => sub { $admin_auth->valid_staff_row } );
                     return;
                 }
 

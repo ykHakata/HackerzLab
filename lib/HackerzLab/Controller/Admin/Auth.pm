@@ -14,7 +14,7 @@ sub login {
     my $self = shift;
 
     my $params     = $self->req->params->to_hash;
-    my $admin_auth = $self->model->admin->auth->create($params);
+    my $admin_auth = $self->model->admin->auth->req_params($params);
     my $msg        = $admin_auth->db->message;
 
     # バリデート
@@ -29,32 +29,30 @@ sub login {
     }
 
     # DB 存在確認
-    if ( $admin_auth->is_not_exist_login_id ) {
+    if ( $admin_auth->is_invalid_login_id ) {
         $self->stash->{validation_msg}
-            = [ $msg->error('NOT_EXIST_LOGIN_ID') ];
+            = [ $msg->error('INVALID_LOGIN_ID') ];
         $self->render_fillin( $template, $admin_auth->req_params );
         return;
     }
 
     # password 照合
-    if ( $admin_auth->is_not_exist_password ) {
+    if ( $admin_auth->is_invalid_password ) {
         $self->stash->{validation_msg}
-            = [ $msg->error('NOT_EXIST_PASSWORD') ];
+            = [ $msg->error('INVALID_PASSWORD') ];
         $self->render_fillin( $template, $admin_auth->req_params );
         return;
     }
 
-    # 合格の値を再配置
-    $admin_auth->setup_req_params;
-
-    # セッション用 id 暗号化
-    $admin_auth->encrypt_exec_session_id();
+    # セッション用 id 暗号化 (後ほど実装)
+    my $session_id = $admin_auth->embed_session_id();
 
     # セッション埋め込み実行
-    $self->session( login_id => $admin_auth->encrypt_session_id() );
+    $self->session( login_id => $session_id );
 
     # ログイン成功メッセージ埋め込み
-    my $flash_msg = $admin_auth->login_id . ' ' . $msg->common('DONE_LOGIN');
+    my $login_id  = $admin_auth->req_params->{login_id};
+    my $flash_msg = $login_id . ' ' . $msg->common('DONE_LOGIN');
     $self->flash( flash_msg => $flash_msg );
 
     # 管理画面トップへ

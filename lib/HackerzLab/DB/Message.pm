@@ -30,8 +30,8 @@ sub error {
     my $hash = +{
         DUPLICATION_LOGIN_ID =>
             '入力されたログインID(email)はすでに登録済みです',
-        NOT_EXIST_LOGIN_ID => 'ログインID(email)が存在しません',
-        NOT_EXIST_PASSWORD => 'ログインパスワードがちがいます',
+        INVALID_LOGIN_ID => 'ログインID(email)が存在しません',
+        INVALID_PASSWORD => 'ログインパスワードがちがいます',
     };
     return $hash->{$value};
 }

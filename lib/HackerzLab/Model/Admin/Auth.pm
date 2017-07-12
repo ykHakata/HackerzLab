@@ -10,14 +10,7 @@ HackerzLab::Model::Admin::Auth - コントローラーモデル (管理機能/�
 
 =cut
 
-has [
-    qw{
-        login_id
-        password
-        decrypt_password
-        encrypt_session_id
-        }
-];
+has [qw{valid_staff_row}];
 
 # 呼び出しテスト
 sub welcome {
@@ -25,92 +18,44 @@ sub welcome {
     return 'welcome HackerzLab::Model::Admin::Auth!!';
 }
 
-# オブジェクト作成
-sub create {
-    my $self   = shift;
-    my $params = shift;
-    $self->req_params($params);
+# TODO: decrypt (復号化) || encrypt (暗号化) の仕組みを実装
+# TODO: DB の password 暗号化 復号化
+# TODO: session 用 id の暗号化  復号化
 
-    # アクセスメソッドへ
-    $self->login_id( $params->{login_id} );
-    $self->password( $params->{password} );
-    return $self;
-}
-
-# password 確認
-sub check_password {
-    my $self = shift;
-    return if !$self->password;
-
-    # TODO: password を復号化して照合 (後ほど実装)
-    # decrypt (復号化) || encrypt (暗号化)
-    return if !$self->decrypt_exec_password();
-
-    # DB 保存の password は暗号化 (decrypt) される予定
-    return 1 if $self->password eq $self->decrypt_password;
-    return;
-}
-
-# DB の password 復号化
-sub decrypt_exec_password {
-    my $self = shift;
-
-    # TODO: 後ほど暗号、復号のロジックを
-    $self->decrypt_password( $self->password );
-
-    # 現状は常に成功
-    return 1;
-    return;
-}
-
-# session 用 id の暗号化
-sub encrypt_exec_session_id {
-    my $self = shift;
-
-    # TODO: 後ほど暗号、復号のロジックを
-    $self->encrypt_session_id( $self->login_id );
-
-    # 現状は常に成功
-    return 1;
-    return;
-}
-
-# 合格の値を再配置
-sub setup_req_params {
-    my $self = shift;
-    $self->login_id( $self->validation_login_staff->login_id );
-    $self->password( $self->validation_login_staff->password );
-    $self->validation_login_staff(undef);
-    return $self;
-}
-
-# ログインしている staff 情報取得
-sub get_login_staff {
-    my $self = shift;
-    return if !$self->login_id;
-    my $NOT_DELETED
-        = $self->db->master->label('NOT_DELETED')->deleted->constant;
-    my $row = $self->db->teng->single( 'staff',
-        +{ login_id => $self->login_id, deleted => $NOT_DELETED, } );
-    return if !$row;
-    return $row;
-}
-
-# DB 存在確認
-sub is_not_exist_login_id {
+# 削除されていない staff row
+sub _get_enabled_staff_row {
     my $self     = shift;
-    my $login_id = $self->req_params->{login_id};
+    my $login_id = shift;
     my $NOT_DELETED
         = $self->db->master->label('NOT_DELETED')->deleted->constant;
     my $row = $self->db->teng->single( 'staff',
         +{ login_id => $login_id, deleted => $NOT_DELETED, } );
+    return $row;
+}
+
+# セッションの妥当性
+sub is_valid_session {
+    my $self     = shift;
+    my $login_id = $self->req_params->{login_id};
+    $self->valid_staff_row(undef);
+    my $row = $self->_get_enabled_staff_row($login_id);
+    $self->valid_staff_row($row);
+    return 1 if $row;
+    return;
+}
+
+# DB 存在確認
+sub is_invalid_login_id {
+    my $self     = shift;
+    my $login_id = $self->req_params->{login_id};
+    my $row      = $self->_get_enabled_staff_row($login_id);
     $self->validation_login_staff($row);
     return 1 if !$row;
     return;
 }
 
 # password 照合
-sub is_not_exist_password {
+sub is_invalid_password {
     my $self     = shift;
     my $password = $self->req_params->{password};
 
@@ -121,6 +66,13 @@ sub is_not_exist_password {
     return 1 if !$row;
     return   if $password eq $row->password;
     return 1;
+}
+
+# ログイン成功後に埋め込むセッション
+sub embed_session_id {
+    my $self     = shift;
+    my $login_id = $self->req_params->{login_id};
+    return $login_id;
 }
 
 1;
