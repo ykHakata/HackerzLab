@@ -256,20 +256,22 @@ sub exec_staff_update {
     };
     $row->update($params);
     $txn->commit;
-    $self->show_id( $self->staff_id );
+    my $staff_id = $self->req_params_passed->{id};
+    $self->show_id( $staff_id );
     return;
 }
 
 # 削除実行
 sub exec_staff_remove {
-    my $self = shift;
-    my $teng = $self->db->teng;
+    my $self     = shift;
+    my $teng     = $self->db->teng;
+    my $staff_id = $self->req_params->{id};
 
     # 連続して実行できない場合は無効
     my $txn = $teng->txn_scope;
 
     # 削除情報取得
-    my $staff_row = $teng->single( 'staff', +{ id => $self->staff_id } );
+    my $staff_row = $teng->single( 'staff', +{ id => $staff_id } );
 
     # 削除フラグ
     $staff_row->soft_delete;

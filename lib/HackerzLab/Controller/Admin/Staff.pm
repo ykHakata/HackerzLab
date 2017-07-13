@@ -168,7 +168,7 @@ sub update {
 sub remove {
     my $self        = shift;
     my $params      = +{ id => $self->stash->{id}, };
-    my $admin_staff = $self->model->admin->staff->create($params);
+    my $admin_staff = $self->model->admin->staff->req_params($params);
     my $msg         = $admin_staff->db->message;
 
     # 削除実行
