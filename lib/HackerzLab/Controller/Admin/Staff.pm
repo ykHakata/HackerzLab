@@ -14,10 +14,8 @@ HackerzLab::Controller::Admin::Staff - コントローラー (管理機能/管�
 sub index {
     my $self = shift;
     my $admin_staff
-        = $self->model->admin->staff->create( $self->req->params->to_hash );
-    $admin_staff->search_staff_index;
-    $self->stash->{staffs} = $admin_staff->staff_rows;
-    $self->stash->{pager}  = $admin_staff->pager;
+        = $self->model->admin->staff->req_params( $self->req->params->to_hash );
+    $self->stash($admin_staff->to_template_index);
     $self->render( template => 'admin/staff/index' );
     return;
 }
@@ -26,15 +24,11 @@ sub index {
 sub search {
     my $self = shift;
     my $admin_staff
-        = $self->model->admin->staff->create( $self->req->params->to_hash );
+        = $self->model->admin->staff->req_params( $self->req->params->to_hash );
     my $msg = $admin_staff->db->message;
 
-    # 入力条件による検索
-    $admin_staff->search_staff_search;
-
     # 検索結果の値一式 (staff, ページ の情報)
-    $self->stash->{staffs} = $admin_staff->staff_rows;
-    $self->stash->{pager}  = $admin_staff->pager;
+    $self->stash($admin_staff->to_template_search);
 
     # teng の row は該当なしの場合は undef だが pager は []
     if ( !@{ $self->stash->{staffs} } ) {
@@ -47,8 +41,8 @@ sub search {
 # 新規登録画面表示
 sub create {
     my $self        = shift;
-    my $admin_staff = $self->model->admin->staff->create();
-    $self->stash->{authorities} = $admin_staff->authorities;
+    my $admin_staff = $self->model->admin->staff;
+    $self->stash( $admin_staff->to_template_create );
     $self->render( template => 'admin/staff/create' );
     return;
 }
@@ -57,9 +51,9 @@ sub create {
 sub show {
     my $self        = shift;
     my $params      = +{ id => $self->stash->{id}, };
-    my $admin_staff = $self->model->admin->staff->create($params);
+    my $admin_staff = $self->model->admin->staff->req_params($params);
     my $msg         = $admin_staff->db->message;
-    $self->stash->{staff} = $admin_staff->search_staff_show->staff_row;
+    $self->stash( $admin_staff->to_template_show );
 
     # 存在しないユーザー
     if ( !$self->stash->{staff} ) {
@@ -75,10 +69,9 @@ sub show {
 sub edit {
     my $self        = shift;
     my $params      = +{ id => $self->stash->{id}, };
-    my $admin_staff = $self->model->admin->staff->create($params);
+    my $admin_staff = $self->model->admin->staff->req_params($params);
     my $msg         = $admin_staff->db->message;
-    $admin_staff->search_staff_edit;
-    $self->stash->{staff} = $admin_staff->staff_row;
+    $self->stash( $admin_staff->to_template_edit );
 
     # 存在しないユーザー
     if ( !$self->stash->{staff} ) {
@@ -89,7 +82,7 @@ sub edit {
 
     # フィルイン
     $self->render_fillin( 'admin/staff/edit',
-        $admin_staff->edit_form_params );
+        $admin_staff->to_template_edit_form );
     return;
 }
 
@@ -99,13 +92,13 @@ sub store {
 
     # 入力
     my $admin_staff
-        = $self->model->admin->staff->create( $self->req->params->to_hash );
+        = $self->model->admin->staff->req_params( $self->req->params->to_hash );
     $admin_staff->login_staff( $self->app->login_staff );
     my $msg = $admin_staff->db->message;
 
     # バリデート
     $admin_staff->validator_customize('admin_staff_store');
-    $self->stash->{authorities} = $admin_staff->authorities;
+    $self->stash( $admin_staff->to_template_create );
     my $template = 'admin/staff/create';
 
     # 失敗、フィルイン、もう一度入力フォーム表示
@@ -137,9 +130,10 @@ sub update {
     my $self = shift;
 
     # 入力
-    my $admin_staff
-        = $self->model->admin->staff->create( $self->req->params->to_hash );
-    my $msg = $admin_staff->db->message;
+    my $params      = $self->req->params->to_hash;
+    my $staff_id    = $params->{id};
+    my $admin_staff = $self->model->admin->staff->req_params($params);
+    my $msg         = $admin_staff->db->message;
 
     # バリデート
     $admin_staff->validator_customize('admin_staff_update');
@@ -149,8 +143,7 @@ sub update {
 
         # エラーメッセージ
         $self->stash->{validation_msg} = $admin_staff->validation_msg;
-        $admin_staff->search_staff_update;
-        $self->stash->{staff} = $admin_staff->staff_row;
+        $self->stash( $admin_staff->to_template_edit );
         $self->render_fillin( 'admin/staff/edit', $admin_staff->req_params );
         return;
     }
@@ -160,7 +153,7 @@ sub update {
 
     # 書き込み保存終了、修正画面リダイレクト終了
     $self->flash( flash_msg => $msg->common('DONE_UPDATE') );
-    $self->redirect_to( '/admin/staff/' . $admin_staff->show_id );
+    $self->redirect_to( '/admin/staff/' . $staff_id );
     return;
 }
 

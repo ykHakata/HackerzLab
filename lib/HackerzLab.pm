@@ -70,6 +70,10 @@ sub startup {
     # Router
     my $r = $self->routes;
 
+    # テスト表示用
+    $r->get('/not_found')->to('info#not_found');
+    $r->get('/exception')->to('info#exception');
+
     # 告知用サイト(暫定) http://hackerzlab.com/
     # $r->get('/')->to('info#index');
     # $r->get('/index')->to('info#index');

@@ -210,11 +210,19 @@ subtest 'edit' => sub {
         $t->content_like( qr{\Q$word\E}, 'content check' );
     }
 
-    # 不正なアクセス
-    $t->get_ok('/admin/staff/99/edit')->status_is(302);
-    my $location_url = $t->tx->res->headers->location;
-    $t->get_ok($location_url)->status_is(200);
-    $t->text_is( 'strong', '存在しないユーザー' );
+    # 不正なアクセス (存在しない id)
+    subtest 'not exists staff id' => sub {
+        $t->get_ok('/admin/staff/99/edit')->status_is(302);
+        my $location_url = $t->tx->res->headers->location;
+        $t->get_ok($location_url)->status_is(200);
+        $t->text_is( 'strong', '存在しないユーザー' );
+    };
+
+    # 値がない
+    subtest 'none staff id' => sub {
+        $t->get_ok('/admin/staff//edit')->status_is(404);
+    };
+
     t::Util::logout_admin($t);
 };
 

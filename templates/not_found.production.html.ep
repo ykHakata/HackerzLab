@@ -1,0 +1,11 @@
+% layout 'info';
+% title 'HackerzLab/not found';
+  <!-- コンテンツ -->
+  <div class="page-header">
+    <h1 class="text-center">Welcome to the HackerzLab<small></small></h1>
+  </div>
+  <!-- 告知サイト -->
+  <div class="text-center alert alert-warning" role="alert">
+    <mark><strong>指定されたページは存在しません</strong></mark>
+  </div>
+  <!-- /コンテンツ -->

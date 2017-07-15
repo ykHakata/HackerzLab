@@ -55,7 +55,6 @@ HackerzLab::DB::Master - マスターデータオブジェクト
     # row オブジェクトの場合
     my $admin_staff = $self->model->admin->staff;
     $admin_staff->req_params($params);
-    my $staff_row = $admin_staff->search_staff_show->staff_row;
 
     # 5
     $staff_row->authority_master->get_id;

@@ -5,7 +5,7 @@
     </div>
     <!-- 詳細一式 -->
     <div class="panel panel-default">
-      <div class="panel-heading"><%= $staff->login_id %></div>
+      <div class="panel-heading"><%= $staff->{login_id} %></div>
       <!-- アイコン -->
       <div class="panel-body">
         <div class="row">
@@ -28,43 +28,43 @@
         <dl class="dl-horizontal list-group ">
           <li class="list-group-item ">
             <dt class="">ID</dt>
-            <dd class=""><%= $staff->id %></dd>
+            <dd class=""><%= $staff->{id} %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">ログインID</dt>
-            <dd class=""><%= $staff->login_id %></dd>
+            <dd class=""><%= $staff->{login_id} %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">管理者権限</dt>
-            <dd class=""><%= $staff->authority_master->get_name %></dd>
+            <dd class=""><%= $staff->{authority} %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">名前</dt>
-            <dd class=""><%= $staff->fetch_address->name %></dd>
+            <dd class=""><%= $address->{name} %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">ふりがな</dt>
-            <dd class=""><%= $staff->fetch_address->rubi %></dd>
+            <dd class=""><%= $address->{rubi} %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">表示用ニックネーム</dt>
-            <dd class=""><%= $staff->fetch_address->nickname %></dd>
+            <dd class=""><%= $address->{nickname} %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">連絡用メールアドレス</dt>
-            <dd class=""><%= $staff->fetch_address->email %></dd>
+            <dd class=""><%= $address->{email} %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">登録日時</dt>
-            <dd class=""><%= $staff->create_ts %></dd>
+            <dd class=""><%= $staff->{create_ts} %></dd>
           </li>
           <li class="list-group-item ">
             <dt class="">修正日時</dt>
-            <dd class=""><%= $staff->modify_ts %></dd>
+            <dd class=""><%= $staff->{modify_ts} %></dd>
           </li>
         </dl>
         <div class="text-center">
-          <a href="/admin/staff/<%= $staff->id %>/edit" class="btn btn-info btn-lg " role="button">編集</a>
+          <a href="/admin/staff/<%= $staff->{id} %>/edit" class="btn btn-info btn-lg " role="button">編集</a>
           <a href="/admin/staff" class="btn btn-default btn-lg " role="button">一覧</a>
           <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#myModal">削除</button>
         </div>
@@ -84,7 +84,7 @@
             本当に削除していいですか
           </div>
           <div class="modal-footer">
-            <form class="" method="post" action="/admin/staff/<%= $staff->id %>/remove">
+            <form class="" method="post" action="/admin/staff/<%= $staff->{id} %>/remove">
               <button type="button" class="btn btn-default" data-dismiss="modal">もどる</button>
               <button type="submit" class="btn btn-danger">実行</button>
             </form>

@@ -25,6 +25,26 @@ sub menu {
     return;
 }
 
+# 本番用の not found ページを描画
+sub not_found {
+    my $self     = shift;
+    my $mode_org = $self->app->mode;
+    $self->app->mode('production');
+    $self->reply->not_found;
+    $self->app->mode($mode_org);
+    return;
+}
+
+# 本番用の exception ページを描画
+sub exception {
+    my $self     = shift;
+    my $mode_org = $self->app->mode;
+    $self->app->mode('production');
+    $self->reply->exception;
+    $self->app->mode($mode_org);
+    return;
+}
+
 1;
 
 __END__
