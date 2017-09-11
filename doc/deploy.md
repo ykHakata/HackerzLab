@@ -593,7 +593,7 @@ carton v1.0.28
 github のソースコードを配置
 
 ```bash
-$ cd ~/HackerzLab/
+$ cd ~/
 $ git clone git@github.com:ykHakata/HackerzLab.git
 
 # carton を使い必要なモジュール一式インストール
